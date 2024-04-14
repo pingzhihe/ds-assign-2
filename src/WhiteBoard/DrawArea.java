@@ -5,13 +5,15 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 
 public class DrawArea extends JComponent {
     private Image image;
     private Graphics2D g2;
     private int currentX, currentY, oldX, oldY;
     private Color currentColor = Color.BLACK;  // Default color
-    private boolean textMode = false, freeDrawMode = false;
+    private boolean textMode = false, freeDrawMode = false, eraseMode = false;
     private String currentShape = "Line"; //  Default shape
 
     public DrawArea() {
@@ -26,10 +28,8 @@ public class DrawArea extends JComponent {
                         g2.drawString(text, oldX, oldY);
                         repaint();
                     }
-                    textMode = false;
                 }
             }
-
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (!textMode) {
@@ -111,11 +111,21 @@ public class DrawArea extends JComponent {
         }
     }
 
-    public void setFreeDrawMode(boolean mode) {
+    public void setPenMode(boolean mode) {
         freeDrawMode = mode;
-        // Disable shape drawing and text mode when free drawing is enabled
+        eraseMode = false;
+        textMode = false;
         if (mode) {
-            textMode = false;
+            g2.setPaint(currentColor);
+        }
+    }
+
+    public void setEraserMode(boolean mode) {
+        freeDrawMode =mode;
+        eraseMode = mode;
+        textMode = false;
+        if (mode) {
+            g2.setPaint(Color.WHITE);
         }
     }
 
@@ -125,5 +135,40 @@ public class DrawArea extends JComponent {
         if (mode) {
             freeDrawMode = false;
         }
+    }
+    public void setThickness(int thickness) {
+        if (g2 != null) {
+            g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        }
+    }
+    public void setEraserCursor(int size) {
+        // 创建光标图像，边框固定为1像素
+        BufferedImage cursorImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = cursorImg.createGraphics();
+
+        // 黑色边框
+        graphics.setColor(Color.BLACK);
+        graphics.drawRect(0, 0, size - 1, size - 1); // 绘制1像素的黑色边框
+
+            // 白色填充中间区域
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(1, 1, size - 2, size - 2);
+
+        graphics.dispose();
+
+        // 设置自定义光标，光标的热点位于中心
+        Cursor customCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+                cursorImg, new Point(size / 2, size / 2), "eraser cursor");
+        setCursor(customCursor);
+    }
+
+
+
+    public RenderedImage getImage() {
+        return (RenderedImage) image;
+    }
+
+    public boolean isEraserMode() {
+        return eraseMode;
     }
 }
