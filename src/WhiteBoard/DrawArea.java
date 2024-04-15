@@ -171,4 +171,5 @@ public class DrawArea extends JComponent {
     public boolean isEraserMode() {
         return eraseMode;
     }
+
 }

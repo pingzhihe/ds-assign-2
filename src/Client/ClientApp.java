@@ -17,7 +17,7 @@ public class ClientApp {
         client = new Client(host, port);
 
         // 初始化 GUI
-        whiteboard = new Whiteboard(); // 假设 Whiteboard 构造函数中创建了 DrawArea 并设置好所有必要的 GUI 组件
+        whiteboard = new Whiteboard();
     }
 
     public void start() {
@@ -30,6 +30,8 @@ public class ClientApp {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Unable to connect to server: " + e.getMessage(),
                     "Connection Error", JOptionPane.ERROR_MESSAGE);
+            // After connect error, close the application
+            System.exit(1);
         }
     }
 
