@@ -2,9 +2,6 @@ package WhiteBoard;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
@@ -18,41 +15,36 @@ public class DrawArea extends JComponent {
 
     public DrawArea() {
         setDoubleBuffered(false);
-        addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
-                oldX = e.getX();
-                oldY = e.getY();
-                if (textMode) {
-                    String text = JOptionPane.showInputDialog("Input Text:");
-                    if (text != null) {
-                        g2.drawString(text, oldX, oldY);
-                        repaint();
-                    }
-                }
-            }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if (!textMode) {
-                    drawShape(oldX, oldY, e.getX(), e.getY());
-                }
+    }
+
+    public void handleMousePressed(int x, int y){
+        oldX = x;
+        oldY = y;
+        if (textMode) {
+            String text = JOptionPane.showInputDialog("Input Text:");
+            if (text != null) {
+                g2.drawString(text, oldX, oldY);
                 repaint();
             }
-        });
+        }
+    }
 
-        addMouseMotionListener(new MouseMotionAdapter() {
-            public void mouseDragged(MouseEvent e) {
-                if (freeDrawMode && !textMode) {
-                    currentX = e.getX();
-                    currentY = e.getY();
-                    if (g2 != null) {
-                        g2.drawLine(oldX, oldY, currentX, currentY);
-                        repaint();
-                        oldX = currentX;
-                        oldY = currentY;
-                    }
-                }
-            }
-        });
+    public void handleMouseReleased(int x, int y){
+        if (!textMode) {
+            drawShape(oldX, oldY, x, y);
+        }
+        repaint();
+    }
+
+    public void handleMouseDragged(int x, int y){
+        currentX = x;
+        currentY = y;
+        if (freeDrawMode && !textMode && g2 != null) {
+            g2.drawLine(oldX, oldY, currentX, currentY);
+            repaint();
+            oldX = currentX;
+            oldY = currentY;
+        }
     }
 
     protected void paintComponent(Graphics g) {

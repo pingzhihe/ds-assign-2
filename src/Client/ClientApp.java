@@ -3,10 +3,6 @@ package Client;
 import WhiteBoard.Whiteboard;
 
 import javax.swing.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 
 public class ClientApp {
     private Client client;
@@ -23,9 +19,7 @@ public class ClientApp {
     public void start() {
         try {
             client.connect();
-            SwingUtilities.invokeLater(() -> {
-                whiteboard.setVisible(true);
-            });
+            whiteboard.start();
         } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Unable to connect to server: " + e.getMessage(),
