@@ -133,7 +133,26 @@ public class DrawArea extends JComponent {
                 cursorImg, new Point(size / 2, size / 2), "eraser cursor");
         setCursor(customCursor);
     }
-
+    public String getState(){
+        return this.state;
+    }
+    public int getOldX(){
+        return this.oldX;
+    }
+    public int getOldY(){
+        return this.oldY;
+    }
+    public void praseMessage(String message){
+        String[] msg = message.split(" ");
+        if (msg[0].equals("free_draw")) {
+            g2.drawLine(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]), Integer.parseInt(msg[4]));
+        } else if (msg[0].equals("Line") || msg[0].equals("Oval") || msg[0].equals("Rectangle") || msg[0].equals("Circle")) {
+            drawShape(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]), Integer.parseInt(msg[4]), msg[0]);
+        } else if (msg[0].equals("text")) {
+            g2.drawString(msg[1], Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+        }
+        repaint();
+    }
 
 
 }

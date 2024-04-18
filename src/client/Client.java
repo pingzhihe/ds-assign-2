@@ -15,15 +15,16 @@ public class Client{
     private final String host;
     private final int port;
     private Channel channel;
+    private EventLoopGroup group;
 
     public Client(String host, int port) {
         this.host = host;
         this.port = port;
+        this.group = new NioEventLoopGroup();
     }
 
 
     public void connect(ClientHandler handler) throws InterruptedException {
-        EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap bootstrap = new Bootstrap()
                     .group(group)
@@ -41,6 +42,13 @@ public class Client{
             group.shutdownGracefully();
             throw e;
         }
+    }
+    public void shutdown(){
+        if (channel != null) {
+            channel.close().awaitUninterruptibly();
+        }
+        group.shutdownGracefully();
+
     }
 
 

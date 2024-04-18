@@ -1,10 +1,14 @@
 package server;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+
+import java.io.IOException;
+
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public void channelActive(ChannelHandlerContext ctx) {
@@ -14,7 +18,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         System.out.println("Ok I think we are connected you sent to me: " + msg);
-        ctx.write("Ok I think we are connected you sent to me: " + msg); // 将接收到的消息写给发送者，而不冲刷出站消息
+        for (Channel channel: allChannels) {
+            if (channel != ctx.channel()) {
+                channel.writeAndFlush(msg);
+            }
+        }
     }
 
     @Override
@@ -24,8 +32,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        cause.printStackTrace();
-        ctx.close(); // 出错时，关闭channel
+        if (cause instanceof IOException && cause.getMessage().contains("Connection reset")) {
+            // 客户端连接被重置
+            System.out.println("Client connection was reset!");
+        } else {
+            cause.printStackTrace(); // 打印其他类型的错误堆栈
+        }
+        ctx.close(); // 无论发生什么类型的异常，都关闭连接
     }
 
     public String praseMessage(String message) {
