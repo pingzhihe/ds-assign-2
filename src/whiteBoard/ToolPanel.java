@@ -1,4 +1,4 @@
-package WhiteBoard;
+package whiteBoard;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -67,13 +67,13 @@ public class ToolPanel extends JPanel {
 
     public void setupActions() {
         clearBtn.addActionListener(e -> drawArea.clear());
-        textBtn.addActionListener(e -> drawArea.setTextMode(true));
-        penBtn.addActionListener(e -> drawArea.setPenMode(true));
-        lineBtn.addActionListener(e -> drawArea.setShape("Line"));
-        ovalBtn.addActionListener(e -> drawArea.setShape("Oval"));
-        rectangleBtn.addActionListener(e -> drawArea.setShape("Rectangle"));
-        circleBtn.addActionListener(e -> drawArea.setShape("Circle"));
-        eraserBtn.addActionListener(e -> drawArea.setEraserMode(true));
+        textBtn.addActionListener(e -> drawArea.setState("text"));
+        penBtn.addActionListener(e -> drawArea.setState("free_draw"));
+        lineBtn.addActionListener(e -> drawArea.setState("Line"));
+        ovalBtn.addActionListener(e -> drawArea.setState("Oval"));
+        rectangleBtn.addActionListener(e -> drawArea.setState("Rectangle"));
+        circleBtn.addActionListener(e -> drawArea.setState("Circle"));
+        eraserBtn.addActionListener(e -> drawArea.setState("eraser"));
         saveBtn.addActionListener(e -> {
             try {
                 JFileChooser fileChooser = new JFileChooser();

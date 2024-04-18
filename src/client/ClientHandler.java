@@ -1,21 +1,21 @@
-package Client;
+package client;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
-
+    private ChannelHandlerContext ctx;
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
+        this.ctx = ctx;
         // Send a message to the server once the connection is active
         ctx.writeAndFlush("Hello from Client!");
     }
 
-    @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        // Print the message received from the server
-        System.out.println("Received from server: " + msg);
-        ctx.close(); // Close the connection after receiving the message
+    public void sendMessage(String message) {
+        if (ctx != null) {
+            ctx.writeAndFlush(message);
+        }
     }
 
     @Override
@@ -23,4 +23,5 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         cause.printStackTrace();
         ctx.close(); // Close the connection on error
     }
+
 }

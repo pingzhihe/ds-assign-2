@@ -1,4 +1,4 @@
-package WhiteBoard;
+package whiteBoard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +10,8 @@ public class DrawArea extends JComponent {
     private Graphics2D g2;
     private int currentX, currentY, oldX, oldY;
     private Color currentColor = Color.BLACK;  // Default color
-    private boolean textMode = false, freeDrawMode = false, eraseMode = false;
-    private String currentShape = "Line"; //  Default shape
+
+    private String state = "free_draw";  // Default state
 
     public DrawArea() {
         setDoubleBuffered(false);
@@ -20,7 +20,7 @@ public class DrawArea extends JComponent {
     public void handleMousePressed(int x, int y){
         oldX = x;
         oldY = y;
-        if (textMode) {
+        if (state.equals("text")) {
             String text = JOptionPane.showInputDialog("Input Text:");
             if (text != null) {
                 g2.drawString(text, oldX, oldY);
@@ -30,20 +30,25 @@ public class DrawArea extends JComponent {
     }
 
     public void handleMouseReleased(int x, int y){
-        if (!textMode) {
-            drawShape(oldX, oldY, x, y);
+        if (!state.equals("free_draw") && !state.equals("text")) {
+            drawShape(oldX, oldY, x, y, state);
         }
         repaint();
     }
 
     public void handleMouseDragged(int x, int y){
-        currentX = x;
-        currentY = y;
-        if (freeDrawMode && !textMode && g2 != null) {
-            g2.drawLine(oldX, oldY, currentX, currentY);
+        if (state.equals("free_draw")) {
+            g2.drawLine(oldX, oldY, x, y);
+            oldX = x;
+            oldY = y;
             repaint();
-            oldX = currentX;
-            oldY = currentY;
+        }
+        else if (state.equals("eraser")) {
+            g2.setPaint(Color.white);
+            g2.drawLine(oldX, oldY, x, y);
+            oldX = x;
+            oldY = y;
+            repaint();
         }
     }
 
@@ -69,22 +74,14 @@ public class DrawArea extends JComponent {
         g2.setPaint(currentColor);
     }
 
-    public void setShape(String shape) {
-        // Set the shape to draw and ensure freeDrawMode and textMode are disabled when a shape is selected
-        freeDrawMode = false;
-        textMode = false;
-        currentShape = shape;
-    }
 
-    private void drawShape(int x1, int y1, int x2, int y2) {
-        if (g2 == null) return;
-
+    public void drawShape(int x1, int y1, int x2, int y2, String shape) {
         int x = Math.min(x1, x2);
         int y = Math.min(y1, y2);
         int width = Math.abs(x1 - x2);
         int height = Math.abs(y1 - y2);
 
-        switch (currentShape) {
+        switch (shape) {
             case "Line":
                 g2.drawLine(x1, y1, x2, y2);
                 break;
@@ -103,36 +100,19 @@ public class DrawArea extends JComponent {
         }
     }
 
-    public void setPenMode(boolean mode) {
-        freeDrawMode = mode;
-        eraseMode = false;
-        textMode = false;
-        if (mode) {
-            g2.setPaint(currentColor);
-        }
+    public void setState(String state){
+        this.state = state;
     }
 
-    public void setEraserMode(boolean mode) {
-        freeDrawMode =mode;
-        eraseMode = mode;
-        textMode = false;
-        if (mode) {
-            g2.setPaint(Color.WHITE);
-        }
-    }
-
-    public void setTextMode(boolean mode) {
-        textMode = mode;
-        // Disable free drawing and shape drawing when text mode is enabled
-        if (mode) {
-            freeDrawMode = false;
-        }
-    }
     public void setThickness(int thickness) {
         if (g2 != null) {
             g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         }
     }
+    public RenderedImage getImage()  {
+        return (RenderedImage) image;
+    }
+
     public void setEraserCursor(int size) {
         // 创建光标图像，边框固定为1像素
         BufferedImage cursorImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
@@ -142,7 +122,7 @@ public class DrawArea extends JComponent {
         graphics.setColor(Color.BLACK);
         graphics.drawRect(0, 0, size - 1, size - 1); // 绘制1像素的黑色边框
 
-            // 白色填充中间区域
+        // 白色填充中间区域
         graphics.setColor(Color.WHITE);
         graphics.fillRect(1, 1, size - 2, size - 2);
 
@@ -155,13 +135,5 @@ public class DrawArea extends JComponent {
     }
 
 
-
-    public RenderedImage getImage() {
-        return (RenderedImage) image;
-    }
-
-    public boolean isEraserMode() {
-        return eraseMode;
-    }
 
 }

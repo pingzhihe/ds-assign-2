@@ -1,4 +1,4 @@
-package Client;
+package client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
@@ -11,8 +11,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-
-public class Client {
+public class Client{
     private final String host;
     private final int port;
     private Channel channel;
@@ -22,7 +21,8 @@ public class Client {
         this.port = port;
     }
 
-    public void connect() throws InterruptedException {
+
+    public void connect(ClientHandler handler) throws InterruptedException {
         EventLoopGroup group = new NioEventLoopGroup();
         try {
             Bootstrap bootstrap = new Bootstrap()
@@ -31,7 +31,7 @@ public class Client {
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
-                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(), new ClientHandler());
+                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(), handler);
                         }
                     });
 
@@ -43,10 +43,5 @@ public class Client {
         }
     }
 
-    // 方法来发送消息
-    public void sendMessage(String message) {
-        if (channel != null && channel.isActive()) {
-            channel.writeAndFlush(message);
-        }
-    }
+
 }

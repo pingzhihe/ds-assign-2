@@ -1,4 +1,4 @@
-package WhiteBoard;
+package whiteBoard;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,9 +8,19 @@ import java.awt.event.MouseEvent;
 public class Whiteboard extends JFrame {
     private DrawArea drawArea;
     private ToolPanel toolsPanel;
+    private NetWorkManager netWorkManager;
+
 
     public Whiteboard() {
         super("Whiteboard");
+
+
+        netWorkManager = new NetWorkManager("localhost", 8080);
+        try{
+            netWorkManager.startConnection();
+        }catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         initializeComponents();
         setupLayout();
         setupActions();
@@ -35,6 +45,7 @@ public class Whiteboard extends JFrame {
             @Override
             public void mousePressed(MouseEvent e) {
                 drawArea.handleMousePressed(e.getX(), e.getY());
+                netWorkManager.sendMessage(e.getX(), e.getY());
             }
             public void mouseReleased(MouseEvent e) {
                 drawArea.handleMouseReleased(e.getX(), e.getY());
@@ -52,7 +63,8 @@ public class Whiteboard extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Whiteboard().setVisible(true));
+        Whiteboard whiteboard = new Whiteboard();
+        whiteboard.start();
     }
 }
 
