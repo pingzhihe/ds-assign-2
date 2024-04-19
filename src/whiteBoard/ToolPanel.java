@@ -5,9 +5,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class ToolPanel extends JPanel {
-    private JButton clearBtn, textBtn, penBtn, eraserBtn, saveBtn;
+    private JButton clearBtn, textBtn, penBtn, eraserBtn, saveBtn, loadBtn;
     private JSlider thicknessSlider;
     private JComboBox<String> shapeSelector;
     private JColorChooser colorChooser;
@@ -27,6 +28,7 @@ public class ToolPanel extends JPanel {
         penBtn = new JButton("Pen");
         eraserBtn = new JButton("Eraser");
         saveBtn = new JButton("Save");
+        loadBtn = new JButton("Load");
         String[] shapes = {"Line", "Oval", "Rectangle", "Circle"};
         shapeSelector = new JComboBox<>(shapes);
     }
@@ -56,8 +58,9 @@ public class ToolPanel extends JPanel {
         add(textBtn);
         add(penBtn);
         add(eraserBtn);
-        add(saveBtn);
         add(shapeSelector);
+        add(saveBtn);
+        add(loadBtn);
         setupActions();
     }
 
@@ -81,6 +84,17 @@ public class ToolPanel extends JPanel {
                 }
             } catch (IOException ex) {
                 ex.printStackTrace();
+            }
+        });
+
+        loadBtn.addActionListener(e -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image files", "jpg", "png"));
+            int option = fileChooser.showOpenDialog(this);
+            if (option == JFileChooser.APPROVE_OPTION) {
+                File file = fileChooser.getSelectedFile();
+                drawArea.loadImage(file);
             }
         });
 

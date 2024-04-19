@@ -1,9 +1,12 @@
 package whiteBoard;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class DrawArea extends JComponent {
     private Image image;
@@ -179,6 +182,26 @@ public class DrawArea extends JComponent {
         int y2 = Integer.parseInt(msg[6]);
         drawWithMsg(state, rgb, thickness, x1, y1, x2, y2);
     }
+
+    public void loadImage(File file) {
+        try {
+            BufferedImage loadedImage = ImageIO.read(file); // 读取图像
+            if (loadedImage != null) {
+                image = loadedImage;
+                g2 = (Graphics2D) image.getGraphics(); // 更新 Graphics2D 对象
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setPaint(currentColor);
+                g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this))); // 可选，根据图像大小调整组件大小
+                revalidate(); // 通知布局管理器组件大小可能改变
+                repaint();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Image could not be read", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 
 
 }
