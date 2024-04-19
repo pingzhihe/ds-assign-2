@@ -30,7 +30,4 @@ public class NetWorkManager {
         client.shutdown();
     }
 
-    public String getMessage(){
-        return clientHandler.getMessage();
-    }
 }

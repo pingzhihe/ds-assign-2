@@ -12,7 +12,7 @@ import java.io.IOException;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     public void channelActive(ChannelHandlerContext ctx) {
-        // 当新客户端连接时，将其 Channel 添加到 ChannelGroup 中以便后续广播
+        //When a new client connects, add its Channel to the ChannelGroup for subsequent broadcasts
         allChannels.add(ctx.channel());
     }
     @Override
@@ -33,12 +33,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         if (cause instanceof IOException && cause.getMessage().contains("Connection reset")) {
-            // 客户端连接被重置
+            // Client connection reset
             System.out.println("Client connection was reset!");
         } else {
-            cause.printStackTrace(); // 打印其他类型的错误堆栈
+            cause.printStackTrace(); // Print other types of error stacks
         }
-        ctx.close(); // 无论发生什么类型的异常，都关闭连接
+        ctx.close(); // No matter what type of exception occurs, close the connection
     }
 
     public String praseMessage(String message) {

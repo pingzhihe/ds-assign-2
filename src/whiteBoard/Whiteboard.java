@@ -68,7 +68,7 @@ public class Whiteboard extends JFrame implements MessageListener{
         drawArea.addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent e) {
-                if (drawArea.getState().equals("free_draw")) {
+                if (drawArea.getState().equals("free_draw") || drawArea.getState().equals("eraser")) {
                     netWorkManager.sendMessage(generateMessage(drawArea) +" " + e.getX() + " " + e.getY());
                     drawArea.handleMouseDragged(e.getX(), e.getY());
                 }

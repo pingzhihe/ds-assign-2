@@ -39,12 +39,14 @@ public class DrawArea extends JComponent {
 
     public void handleMouseDragged(int x, int y){
         if (state.equals("free_draw")) {
+            g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2.drawLine(oldX, oldY, x, y);
             oldX = x;
             oldY = y;
             repaint();
         }
         else if (state.equals("eraser")) {
+            g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2.setPaint(Color.white);
             g2.drawLine(oldX, oldY, x, y);
             oldX = x;
@@ -77,6 +79,7 @@ public class DrawArea extends JComponent {
 
 
     public void drawShape(int x1, int y1, int x2, int y2, String shape) {
+        g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         int x = Math.min(x1, x2);
         int y = Math.min(y1, y2);
         int width = Math.abs(x1 - x2);

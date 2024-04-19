@@ -7,8 +7,9 @@ import java.io.File;
 import java.io.IOException;
 
 public class ToolPanel extends JPanel {
-    private JButton clearBtn, textBtn, penBtn, lineBtn, ovalBtn, rectangleBtn, circleBtn, eraserBtn, saveBtn;
+    private JButton clearBtn, textBtn, penBtn, eraserBtn, saveBtn;
     private JSlider thicknessSlider;
+    private JComboBox<String> shapeSelector;
     private JColorChooser colorChooser;
     private DrawArea drawArea;
 
@@ -24,16 +25,14 @@ public class ToolPanel extends JPanel {
         clearBtn = new JButton("Clear");
         textBtn = new JButton("Text");
         penBtn = new JButton("Pen");
-        lineBtn = new JButton("Line");
-        ovalBtn = new JButton("Oval");
-        rectangleBtn = new JButton("Rectangle");
-        circleBtn = new JButton("Circle");
         eraserBtn = new JButton("Eraser");
         saveBtn = new JButton("Save");
+        String[] shapes = {"Line", "Oval", "Rectangle", "Circle"};
+        shapeSelector = new JComboBox<>(shapes);
     }
 
     private void setupColorChooser() {
-        JButton colorBtn = new JButton("Choose Color");
+        JButton colorBtn = new JButton("Color");
         colorChooser = new JColorChooser();
         colorBtn.addActionListener(e -> {
             Color newColor = JColorChooser.showDialog(null, "Choose a color", Color.black);
@@ -56,12 +55,9 @@ public class ToolPanel extends JPanel {
         add(clearBtn);
         add(textBtn);
         add(penBtn);
-        add(lineBtn);
-        add(ovalBtn);
-        add(rectangleBtn);
-        add(circleBtn);
         add(eraserBtn);
         add(saveBtn);
+        add(shapeSelector);
         setupActions();
     }
 
@@ -69,11 +65,11 @@ public class ToolPanel extends JPanel {
         clearBtn.addActionListener(e -> drawArea.clear());
         textBtn.addActionListener(e -> drawArea.setState("text"));
         penBtn.addActionListener(e -> drawArea.setState("free_draw"));
-        lineBtn.addActionListener(e -> drawArea.setState("Line"));
-        ovalBtn.addActionListener(e -> drawArea.setState("Oval"));
-        rectangleBtn.addActionListener(e -> drawArea.setState("Rectangle"));
-        circleBtn.addActionListener(e -> drawArea.setState("Circle"));
         eraserBtn.addActionListener(e -> drawArea.setState("eraser"));
+        shapeSelector.addActionListener(e -> {
+            String selectedShape = (String) shapeSelector.getSelectedItem();
+            drawArea.setState(selectedShape);
+        });
         saveBtn.addActionListener(e -> {
             try {
                 JFileChooser fileChooser = new JFileChooser();
