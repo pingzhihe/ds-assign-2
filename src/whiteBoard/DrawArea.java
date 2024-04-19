@@ -8,8 +8,9 @@ import java.awt.image.RenderedImage;
 public class DrawArea extends JComponent {
     private Image image;
     private Graphics2D g2;
-    private int currentX, currentY, oldX, oldY;
+    private int oldX, oldY;
     private Color currentColor = Color.BLACK;  // Default color
+    private int thickness = 3;  // Default thickness
 
     private String state = "free_draw";  // Default state
 
@@ -106,6 +107,7 @@ public class DrawArea extends JComponent {
 
     public void setThickness(int thickness) {
         if (g2 != null) {
+            this.thickness = thickness;
             g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         }
     }
@@ -142,16 +144,37 @@ public class DrawArea extends JComponent {
     public int getOldY(){
         return this.oldY;
     }
-    public void praseMessage(String message){
-        String[] msg = message.split(" ");
-        if (msg[0].equals("free_draw")) {
-            g2.drawLine(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]), Integer.parseInt(msg[4]));
-        } else if (msg[0].equals("Line") || msg[0].equals("Oval") || msg[0].equals("Rectangle") || msg[0].equals("Circle")) {
-            drawShape(Integer.parseInt(msg[1]), Integer.parseInt(msg[2]), Integer.parseInt(msg[3]), Integer.parseInt(msg[4]), msg[0]);
-        } else if (msg[0].equals("text")) {
-            g2.drawString(msg[1], Integer.parseInt(msg[2]), Integer.parseInt(msg[3]));
+    public int getColor(){
+        return this.currentColor.getRGB();
+    }
+    public int getThickness(){
+        return this.thickness;
+    }
+
+    public void drawWithMsg(String state, int rgb, int thickness, int x1, int y1, int x2, int y2){
+        g2.setPaint(new Color(rgb));
+        g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        if (state.equals("free_draw")) {
+            g2.drawLine(x1, y1, x2, y2);
+        } else if (state.equals("eraser")) {
+            g2.setPaint(Color.white);
+            g2.drawLine(x1, y1, x2, y2);
+        } else {
+            drawShape(x1, y1, x2, y2, state);
         }
         repaint();
+    }
+
+    public void parseMessage(String message){
+        String[] msg = message.split(" ");
+        String state = msg[0];
+        int rgb = Integer.parseInt(msg[1]);
+        int thickness = Integer.parseInt(msg[2]);
+        int x1 = Integer.parseInt(msg[3]);
+        int y1 = Integer.parseInt(msg[4]);
+        int x2 = Integer.parseInt(msg[5]);
+        int y2 = Integer.parseInt(msg[6]);
+        drawWithMsg(state, rgb, thickness, x1, y1, x2, y2);
     }
 
 

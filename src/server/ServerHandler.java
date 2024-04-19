@@ -17,7 +17,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println("Ok I think we are connected you sent to me: " + msg);
+        System.out.println(msg);
         for (Channel channel: allChannels) {
             if (channel != ctx.channel()) {
                 channel.writeAndFlush(msg);

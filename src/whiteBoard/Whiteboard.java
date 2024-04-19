@@ -54,33 +54,33 @@ public class Whiteboard extends JFrame implements MessageListener{
             public void mousePressed(MouseEvent e) {
                 drawArea.handleMousePressed(e.getX(), e.getY());
                 if (drawArea.getState().equals("text")) {
-                    netWorkManager.sendMessage(drawArea.getState() + " " + e.getX() + " " + e.getY());
+                    netWorkManager.sendMessage(generateMessage(drawArea) +" " + e.getX() + " " + e.getY());
                 }
             }
             public void mouseReleased(MouseEvent e) {
                 drawArea.handleMouseReleased(e.getX(), e.getY());
                 if (!drawArea.getState().equals("free_draw") && !drawArea.getState().equals("text") && !drawArea.getState().equals("eraser")) {
-                    netWorkManager.sendMessage(drawArea.getState() + " " + e.getX() + " " + e.getY() + " " + drawArea.getOldX() + " " + drawArea.getOldY());
-                }
-            }
-        });
-        drawArea.addMouseMotionListener(new MouseAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent e) {
-                if (drawArea.getState().equals("free_draw")) {
-                    netWorkManager.sendMessage(drawArea.getState() + " " + e.getX() + " " + e.getY()+ " " + drawArea.getOldX() + " " + drawArea.getOldY());
-                    drawArea.handleMouseDragged(e.getX(), e.getY());
+                    netWorkManager.sendMessage(generateMessage(drawArea) +" " + e.getX() + " " + e.getY());
                 }
             }
         });
 
+        drawArea.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                if (drawArea.getState().equals("free_draw")) {
+                    netWorkManager.sendMessage(generateMessage(drawArea) +" " + e.getX() + " " + e.getY());
+                    drawArea.handleMouseDragged(e.getX(), e.getY());
+                }
+            }
+        });
     }
 
     @Override
     public void onMessageReceived(String message) {
         SwingUtilities.invokeLater(() -> {
             if (drawArea != null) {
-                drawArea.praseMessage(message);
+                drawArea.parseMessage(message);
             }
         });
     }
@@ -91,6 +91,9 @@ public class Whiteboard extends JFrame implements MessageListener{
     public static void main(String[] args) {
         Whiteboard whiteboard = new Whiteboard();
         whiteboard.start();
+    }
+    public String generateMessage(DrawArea d1) {
+        return d1.getState() + " " + d1.getColor()+ " " + d1.getThickness() + " " + d1.getOldX() + " " + d1.getOldY();
     }
 
 }
