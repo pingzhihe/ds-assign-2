@@ -25,6 +25,7 @@ public class Server {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
+                            ch.config().setOption(ChannelOption.TCP_NODELAY, true);
                             ch.pipeline().addLast(new StringDecoder(), new StringEncoder(), new ServerHandler());
                         }
                     })
