@@ -14,15 +14,16 @@ public class ToolPanel extends JPanel {
     private JColorChooser colorChooser;
     private DrawArea drawArea;
 
-    public ToolPanel(DrawArea drawArea) {
+    public ToolPanel(DrawArea drawArea, boolean isManager) {
         this.drawArea = drawArea;
         setLayout(new FlowLayout());
-        initializeButtons();
+        initializeButtons(isManager);
+        System.out.println(isManager);
         setupColorChooser();
         addComponents();
     }
 
-        private void initializeButtons() {
+        private void initializeButtons(boolean isManager) {
         clearBtn = new JButton("Clear");
         textBtn = new JButton("Text");
         penBtn = new JButton("Pen");
@@ -31,6 +32,8 @@ public class ToolPanel extends JPanel {
         loadBtn = new JButton("Load");
         String[] shapes = {"Line", "Oval", "Rectangle", "Circle"};
         shapeSelector = new JComboBox<>(shapes);
+        saveBtn.setVisible(isManager);
+        loadBtn.setVisible(isManager);
     }
 
     private void setupColorChooser() {
@@ -61,6 +64,7 @@ public class ToolPanel extends JPanel {
         add(shapeSelector);
         add(saveBtn);
         add(loadBtn);
+
         setupActions();
     }
 

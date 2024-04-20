@@ -11,23 +11,28 @@ import java.io.IOException;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+    private static boolean hasManager = false;
     public void channelActive(ChannelHandlerContext ctx) {
-        //When a new client connects, add its Channel to the ChannelGroup for subsequent broadcasts
         allChannels.add(ctx.channel());
+        if (!hasManager) {
+            hasManager = true;
+            ctx.writeAndFlush("Manager");
+        }
+        else{
+            ctx.writeAndFlush("Normal");
+        }
     }
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         String msgString = msg.toString();
         if (msgString.startsWith("wb")) {
-            String message = msgString.substring(3);
             for (Channel channel : allChannels) {
                 if (channel != ctx.channel()) {
-                    channel.writeAndFlush(message);
+                    channel.writeAndFlush(msgString);
                 }
             }
         }
     }
-
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush(); // 将之前接收到的信息冲刷到远程节点

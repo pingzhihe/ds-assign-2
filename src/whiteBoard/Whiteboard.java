@@ -6,31 +6,24 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import client.MessageListener;
 
-public class Whiteboard extends JFrame implements MessageListener{
+public class Whiteboard extends JFrame {
     private DrawArea drawArea;
     private ToolPanel toolsPanel;
-    private NetWorkManager netWorkManager;
     private boolean isManager = false;
 
+    private WhiteBoardEventListener listener;
 
-    public Whiteboard() {
+    public Whiteboard(WhiteBoardEventListener listener) {
+
         super("Whiteboard");
+        this.listener = listener;
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                netWorkManager.shutdown();
                 System.exit(0);
             }
         });
-
-        netWorkManager = new NetWorkManager("localhost", 8080,  this);
-        try{
-            netWorkManager.startConnection();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         initializeComponents();
         setupLayout();
         setupActions();
@@ -41,7 +34,8 @@ public class Whiteboard extends JFrame implements MessageListener{
         setSize(1000, 800);
         setLocationRelativeTo(null);
         drawArea = new DrawArea();
-        toolsPanel = new ToolPanel(drawArea);
+        System.out.println(isManager);
+        toolsPanel = new ToolPanel(drawArea, isManager);
     }
 
     private void setupLayout() {
@@ -56,13 +50,13 @@ public class Whiteboard extends JFrame implements MessageListener{
             public void mousePressed(MouseEvent e) {
                 drawArea.handleMousePressed(e.getX(), e.getY());
                 if (drawArea.getState().equals("text")) {
-                    netWorkManager.sendMessage(generateMessage(drawArea) +" " + e.getX() + " " + e.getY());
                 }
             }
             public void mouseReleased(MouseEvent e) {
                 drawArea.handleMouseReleased(e.getX(), e.getY());
                 if (!drawArea.getState().equals("free_draw") && !drawArea.getState().equals("text") && !drawArea.getState().equals("eraser")) {
-                    netWorkManager.sendMessage(generateMessage(drawArea) +" " + e.getX() + " " + e.getY());
+                    listener.onDraw(generateMessage(drawArea) + " " + e.getX() + " " + e.getY() + "\n");
+                    drawArea.handleMouseReleased(e.getX(), e.getY());
                 }
             }
         });
@@ -71,34 +65,31 @@ public class Whiteboard extends JFrame implements MessageListener{
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (drawArea.getState().equals("free_draw") || drawArea.getState().equals("eraser")) {
-                    netWorkManager.sendMessage(generateMessage(drawArea) +" " + e.getX() + " " + e.getY());
+                    listener.onDraw(generateMessage(drawArea) + " " + e.getX() + " " + e.getY() + "\n");
                     drawArea.handleMouseDragged(e.getX(), e.getY());
                 }
             }
         });
     }
 
-    @Override
-    public void onMessageReceived(String message) {
-        SwingUtilities.invokeLater(() -> {
-            if (drawArea != null) {
-                drawArea.parseMessage(message);
-            }
-        });
-    }
     public void start() {
         SwingUtilities.invokeLater(() -> setVisible(true));
     }
 
-    public static void main(String[] args) {
-        Whiteboard whiteboard = new Whiteboard();
-        whiteboard.start();
-    }
     public String generateMessage(DrawArea d1) {
         return "wb " + d1.getState() + " " + d1.getColor()+ " " + d1.getThickness() + " " + d1.getOldX() + " " + d1.getOldY();
     }
 
-
+    public void setManager(boolean isManager) {
+        this.isManager = isManager;
+    }
+    public void praseMessage(String message){
+        String[] messages = message.split("\n");
+        for (String msg : messages) {
+            String trimedMsg= msg.substring(3);
+            drawArea.parseMessage(trimedMsg);
+        }
+    }
 }
 
 

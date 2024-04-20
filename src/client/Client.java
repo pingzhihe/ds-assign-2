@@ -43,6 +43,7 @@ public class Client{
             throw e;
         }
     }
+
     public void shutdown(){
         if (channel != null) {
             channel.close().awaitUninterruptibly();
@@ -50,6 +51,4 @@ public class Client{
         group.shutdownGracefully();
 
     }
-
-
 }
