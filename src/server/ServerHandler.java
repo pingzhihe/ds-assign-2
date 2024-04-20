@@ -17,10 +17,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        System.out.println(msg);
-        for (Channel channel: allChannels) {
-            if (channel != ctx.channel()) {
-                channel.writeAndFlush(msg);
+        String msgString = msg.toString();
+        if (msgString.startsWith("wb")) {
+            String message = msgString.substring(3);
+            for (Channel channel : allChannels) {
+                if (channel != ctx.channel()) {
+                    channel.writeAndFlush(message);
+                }
             }
         }
     }
@@ -41,7 +44,4 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         ctx.close(); // No matter what type of exception occurs, close the connection
     }
 
-    public String praseMessage(String message) {
-        return message;
-    }
 }

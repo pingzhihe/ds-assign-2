@@ -34,6 +34,7 @@ public class DrawArea extends JComponent {
     }
 
     public void handleMouseReleased(int x, int y){
+        g2.setPaint(currentColor);
         if (!state.equals("free_draw") && !state.equals("text")) {
             drawShape(oldX, oldY, x, y, state);
         }
@@ -43,6 +44,7 @@ public class DrawArea extends JComponent {
     public void handleMouseDragged(int x, int y){
         if (state.equals("free_draw")) {
             g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.setPaint(currentColor);
             g2.drawLine(oldX, oldY, x, y);
             oldX = x;
             oldY = y;

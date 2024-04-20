@@ -8,8 +8,8 @@ public class NetWorkManager {
     private ClientHandler clientHandler;
 
     public NetWorkManager(String host, int port, MessageListener listener) {
-        // 初始化中介者
-        // 初始化网络客户端
+
+        // Initialize the client and clientHandler
         client = new Client(host, port);
         clientHandler = new ClientHandler(listener);
     }

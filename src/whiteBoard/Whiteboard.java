@@ -12,6 +12,8 @@ public class Whiteboard extends JFrame implements MessageListener{
     private DrawArea drawArea;
     private ToolPanel toolsPanel;
     private NetWorkManager netWorkManager;
+    private boolean isManager = false;
+
 
     public Whiteboard() {
         super("Whiteboard");
@@ -93,8 +95,9 @@ public class Whiteboard extends JFrame implements MessageListener{
         whiteboard.start();
     }
     public String generateMessage(DrawArea d1) {
-        return d1.getState() + " " + d1.getColor()+ " " + d1.getThickness() + " " + d1.getOldX() + " " + d1.getOldY();
+        return "wb " + d1.getState() + " " + d1.getColor()+ " " + d1.getThickness() + " " + d1.getOldX() + " " + d1.getOldY();
     }
+
 
 }
 
