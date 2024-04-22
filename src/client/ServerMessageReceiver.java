@@ -1,6 +1,6 @@
 package client;
 
-public interface MessageReceiver {
+public interface ServerMessageReceiver {
     void messageReceived(String message);
 
 

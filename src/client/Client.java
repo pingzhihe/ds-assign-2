@@ -10,6 +10,8 @@ import io.netty.handler.codec.string.StringEncoder;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 
+import java.net.ConnectException;
+
 
 public class Client{
     private final String host;
@@ -24,7 +26,7 @@ public class Client{
     }
 
 
-    public void connect(ClientHandler handler) throws InterruptedException {
+    public void connect(ClientHandler handler) throws InterruptedException, ConnectException {
         try {
             Bootstrap bootstrap = new Bootstrap()
                     .group(group)
@@ -42,9 +44,19 @@ public class Client{
 
             ChannelFuture future = bootstrap.connect(host, port).sync();
             channel = future.channel();
-        } catch (InterruptedException e) {
+            if (!future.isSuccess()) {
+                throw future.cause(); // 如果连接失败，抛出异常
+            }
+
+        } catch (Throwable e) {
             group.shutdownGracefully();
-            throw e;
+            if (e instanceof ConnectException) {
+                throw (ConnectException) e; // 抛出连接异常供调用者处理
+            } else if (e instanceof InterruptedException) {
+                throw (InterruptedException) e; // 抛出中断异常
+            } else {
+                throw new RuntimeException("Connection failed due to an unexpected error", e);
+            }
         }
     }
 

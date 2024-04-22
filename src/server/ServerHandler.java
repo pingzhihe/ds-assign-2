@@ -32,7 +32,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 }
             }
         }
+        else if (msgString.startsWith("chat")){
+            System.out.println(msgString);
+        }
     }
+
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush(); // 将之前接收到的信息冲刷到远程节点

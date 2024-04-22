@@ -6,7 +6,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     private ChannelHandlerContext ctx;
     private String message;
-    private MessageReceiver listener;
+    private ServerMessageReceiver listener;
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         this.ctx = ctx;
@@ -31,7 +31,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         ctx.close(); // Close the connection on error
     }
 
-    public ClientHandler(MessageReceiver listener) {
+    public ClientHandler(ServerMessageReceiver listener) {
         this.listener = listener;
     }
 }

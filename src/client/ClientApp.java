@@ -2,7 +2,10 @@ package client;
 import whiteBoard.WhiteBoardEventListener;
 import whiteBoard.Whiteboard;
 
-public class ClientApp implements WhiteBoardEventListener, MessageReceiver{
+import javax.swing.*;
+import java.net.ConnectException;
+
+public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver {
     private Client client;
     private ClientHandler clientHandler;
     private Whiteboard whiteboard;
@@ -21,12 +24,12 @@ public class ClientApp implements WhiteBoardEventListener, MessageReceiver{
     }
 
 
-    public void startConnection()throws InterruptedException {
+    public void startConnection() {
         try {
             client.connect(clientHandler);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            throw e;
+        } catch (ConnectException | InterruptedException e) { // 捕获特定的 ConnectException
+            showErrorDialog("Cannot connect to server at " + client.getHost() + ":" + client.getPort() + ". Please ensure the server is running.");
+            System.exit(1);
         }
     }
 
@@ -38,7 +41,7 @@ public class ClientApp implements WhiteBoardEventListener, MessageReceiver{
     public void messageReceived(String message) {
         System.out.println("ClientApp: message Received: " + message);
         if (message.equals("Manager")){
-            whiteboard.manaagerMode();
+            whiteboard.managerMode();
             whiteboard.start();
 
         }
@@ -46,16 +49,16 @@ public class ClientApp implements WhiteBoardEventListener, MessageReceiver{
             whiteboard.start();
         }
         if (message.startsWith("wb")){
-            whiteboard.praseMessage(message);
+            whiteboard.parseMessage(message);
         }
+    }
+
+    private void showErrorDialog(String message) {
+        JOptionPane.showMessageDialog(null, message, "Connection Error", JOptionPane.ERROR_MESSAGE);
     }
 
     public static void main(String[]args){
         ClientApp clientApp = new ClientApp("localhost", 8080);
-        try{
-            clientApp.startConnection();
-        }catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        clientApp.startConnection();
     }
 }
