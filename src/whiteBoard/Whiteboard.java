@@ -34,7 +34,6 @@ public class Whiteboard extends JFrame {
         setSize(1000, 800);
         setLocationRelativeTo(null);
         drawArea = new DrawArea();
-        System.out.println(isManager);
         toolsPanel = new ToolPanel(drawArea, isManager);
     }
 
@@ -65,7 +64,7 @@ public class Whiteboard extends JFrame {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (drawArea.getState().equals("free_draw") || drawArea.getState().equals("eraser")) {
-                    listener.onDraw(generateMessage(drawArea) + " " + e.getX() + " " + e.getY() + "\n");
+                    listener.onDraw(generateMessage(drawArea) + " " + e.getX() + " " + e.getY()+ "\n");
                     drawArea.handleMouseDragged(e.getX(), e.getY());
                 }
             }
@@ -89,6 +88,9 @@ public class Whiteboard extends JFrame {
             String trimedMsg= msg.substring(3);
             drawArea.parseMessage(trimedMsg);
         }
+    }
+    public void manaagerMode(){
+        toolsPanel.setManager();
     }
 }
 

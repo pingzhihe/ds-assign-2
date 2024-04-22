@@ -7,6 +7,9 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+
 
 public class Client{
     private final String host;
@@ -30,7 +33,10 @@ public class Client{
                         @Override
                         protected void initChannel(SocketChannel ch) {
                             ch.config().setOption(ChannelOption.TCP_NODELAY, true);
-                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(), handler);
+                            ch.pipeline().addLast(
+                                    new DelimiterBasedFrameDecoder(9102, Unpooled.wrappedBuffer(new byte[]{'\n'})),
+                                    new StringDecoder(),
+                                    new StringEncoder(), handler);
                         }
                     });
 
@@ -47,6 +53,12 @@ public class Client{
             channel.close().awaitUninterruptibly();
         }
         group.shutdownGracefully();
+    }
 
+    public String getHost() {
+        return host;
+    }
+    public int getPort() {
+        return port;
     }
 }

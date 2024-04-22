@@ -16,10 +16,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         allChannels.add(ctx.channel());
         if (!hasManager) {
             hasManager = true;
-            ctx.writeAndFlush("Manager");
+            ctx.writeAndFlush("Manager\n");
         }
         else{
-            ctx.writeAndFlush("Normal");
+            ctx.writeAndFlush("Normal\n");
         }
     }
     @Override
@@ -28,7 +28,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (msgString.startsWith("wb")) {
             for (Channel channel : allChannels) {
                 if (channel != ctx.channel()) {
-                    channel.writeAndFlush(msgString);
+                    channel.writeAndFlush(msgString + "\n");
                 }
             }
         }

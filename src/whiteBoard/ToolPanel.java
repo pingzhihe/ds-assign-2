@@ -32,8 +32,8 @@ public class ToolPanel extends JPanel {
         loadBtn = new JButton("Load");
         String[] shapes = {"Line", "Oval", "Rectangle", "Circle"};
         shapeSelector = new JComboBox<>(shapes);
-        saveBtn.setVisible(isManager);
-        loadBtn.setVisible(isManager);
+        saveBtn.setVisible(false);
+        loadBtn.setVisible(false);
     }
 
     private void setupColorChooser() {
@@ -107,4 +107,10 @@ public class ToolPanel extends JPanel {
             drawArea.setThickness(thickness);
         });
     }
+
+    public void setManager(){
+        saveBtn.setVisible(true);
+        loadBtn.setVisible(true);
+    }
+
 }

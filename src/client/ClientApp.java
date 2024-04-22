@@ -38,7 +38,7 @@ public class ClientApp implements WhiteBoardEventListener, MessageReceiver{
     public void messageReceived(String message) {
         System.out.println("ClientApp: message Received: " + message);
         if (message.equals("Manager")){
-            whiteboard.setManager(true);
+            whiteboard.manaagerMode();
             whiteboard.start();
 
         }

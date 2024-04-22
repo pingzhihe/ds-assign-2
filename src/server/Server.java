@@ -7,6 +7,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import io.netty.buffer.Unpooled;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 
 public class Server {
     private int port;
@@ -26,7 +28,9 @@ public class Server {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.config().setOption(ChannelOption.TCP_NODELAY, true);
-                            ch.pipeline().addLast(new StringDecoder(), new StringEncoder(), new ServerHandler());
+                            ch.pipeline().addLast(
+                                    new DelimiterBasedFrameDecoder(9102, Unpooled.wrappedBuffer(new byte[]{'\n'})),
+                                    new StringDecoder(), new StringEncoder(), new ServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
