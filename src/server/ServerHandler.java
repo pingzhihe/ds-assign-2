@@ -6,19 +6,24 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.util.AttributeKey;
 
 import java.io.IOException;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private static boolean hasManager = false;
+    private static final AttributeKey<String> USER_NAME = AttributeKey.valueOf("USER_NAME");
+    private static final AttributeKey<Boolean> MANAGER = AttributeKey.valueOf("MANAGER");
     public void channelActive(ChannelHandlerContext ctx) {
         allChannels.add(ctx.channel());
         if (!hasManager) {
             hasManager = true;
             ctx.writeAndFlush("Manager\n");
+            ctx.channel().attr(MANAGER).set(true);
         }
         else{
+            ctx.channel().attr(MANAGER).set(false);
             ctx.writeAndFlush("Normal\n");
         }
     }
@@ -34,6 +39,11 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
         else if (msgString.startsWith("chat")){
             System.out.println(msgString);
+        }
+        else if (msgString.startsWith("UserName")){
+            String username = msgString.split(":")[1].trim();
+            ctx.channel().attr(USER_NAME).set(username);
+            System.out.println("Server received: " + msgString);
         }
     }
 

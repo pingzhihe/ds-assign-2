@@ -10,7 +10,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         this.ctx = ctx;
-        ctx.writeAndFlush("Hello from Client!");
+        ctx.writeAndFlush("Hello from Client!\n");
     }
 
     public void sendMessage(String msg) {
