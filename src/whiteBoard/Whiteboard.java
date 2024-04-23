@@ -41,6 +41,7 @@ public class Whiteboard extends JFrame {
         drawArea = new DrawArea();
         toolsPanel = new ToolPanel(drawArea, isManager);
         managerPanel = new ManagerPanel();
+        chatArea.setPreferredSize(new Dimension(200,getHeight()));
         managerPanel.setPreferredSize(new Dimension(200, getHeight()));
         drawArea.setPreferredSize(new Dimension(800, 600));
         getContentPane().add(drawArea, BorderLayout.CENTER);
@@ -83,7 +84,7 @@ public class Whiteboard extends JFrame {
         chatArea.getSendButton().addActionListener(e -> {
             String message = chatArea.getChatInput().getText();
             chatArea.getChatInput().setText("");
-            listener.onDraw("chat " + message + "\n");
+            listener.onDraw("chat: " + message + "\n");
         });
 
         managerPanel.getKickOutButton().addActionListener(e -> {
@@ -120,6 +121,9 @@ public class Whiteboard extends JFrame {
     }
     public void shunDown(){
         System.exit(0);
+    }
+    public void receiveChat(String message){
+        chatArea.getChatArea().append(message + "\n");
     }
 }
 

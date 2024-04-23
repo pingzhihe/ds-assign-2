@@ -71,8 +71,12 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         else if (message.equals("KickedOut")){
             Dialogs.showKickOutMessage();
             whiteboard.shunDown();
-        }
-        else {
+        } else if (message.startsWith("chat")) {
+            System.out.println(message);
+            String chat = message.substring(5);
+            whiteboard.receiveChat(chat);
+
+        } else {
             System.out.println("Client received: " + message);
         }
     }

@@ -29,7 +29,7 @@ public class ManagerPanel extends JPanel {
                     case 0:
                         return Boolean.class; // 第一列为复选框
                     case 1:
-                        return String.class; // 第二列为用户名
+                        return String.class; // Second row is username
                     default:
                         return Object.class;
                 }
