@@ -60,7 +60,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
             whiteboard.start();
         }
 
-        if (message.startsWith("wb")){
+        else if (message.startsWith("wb")){
             whiteboard.parseMessage(message);
         }
         else if (message.startsWith("NewUser")){

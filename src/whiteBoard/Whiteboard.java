@@ -6,8 +6,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 public class Whiteboard extends JFrame {
     private DrawArea drawArea;
     private ToolPanel toolsPanel;
@@ -43,13 +41,14 @@ public class Whiteboard extends JFrame {
         drawArea = new DrawArea();
         toolsPanel = new ToolPanel(drawArea, isManager);
         managerPanel = new ManagerPanel();
-        drawArea.setSize(800, 600);
+        managerPanel.setPreferredSize(new Dimension(200, getHeight()));
+        drawArea.setPreferredSize(new Dimension(800, 600));
+        getContentPane().add(drawArea, BorderLayout.CENTER);
     }
 
     private void setupLayout() {
         getContentPane().add(chatArea, BorderLayout.EAST);
         getContentPane().add(toolsPanel, BorderLayout.NORTH);
-        getContentPane().add(drawArea, BorderLayout.CENTER);
     }
 
     private void setupActions() {
@@ -111,6 +110,7 @@ public class Whiteboard extends JFrame {
         }
     }
     public void managerMode(){
+        setSize(1200, 600);
         toolsPanel.setManager();
         getContentPane().add(managerPanel, BorderLayout.WEST);
     }

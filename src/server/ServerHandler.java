@@ -9,12 +9,15 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.AttributeKey;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private static boolean hasManager = false;
     private static final AttributeKey<String> USER_NAME = AttributeKey.valueOf("USER_NAME");
     private static final AttributeKey<Boolean> MANAGER = AttributeKey.valueOf("MANAGER");
+
+    private HashMap<String, String> chatHistory = new HashMap<>();
     public void channelActive(ChannelHandlerContext ctx) {
         allChannels.add(ctx.channel());
         if (!hasManager) {
@@ -40,6 +43,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
         else if (msgString.startsWith("chat")){
             System.out.println(msgString);
+            String[] parts = msgString.split(":");
+            String message = parts[1].trim();
+            String username = ctx.channel().attr(USER_NAME).get();
+            chatHistory.put(username, message);
+            for (Channel channel : allChannels) {
+                for (String user : chatHistory.keySet()) {
+                    channel.writeAndFlush("chat " + user + ": " + chatHistory.get(user) + "\n");
+                }
+            }
         }
         else if (msgString.startsWith("UserName")){
             String username = msgString.split(":")[1].trim();
