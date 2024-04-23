@@ -25,6 +25,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         else{
             ctx.channel().attr(MANAGER).set(false);
             ctx.writeAndFlush("Normal\n");
+
         }
     }
     @Override
@@ -44,13 +45,44 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             String username = msgString.split(":")[1].trim();
             ctx.channel().attr(USER_NAME).set(username);
             System.out.println("Server received: " + msgString);
+            sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
+        }
+
+        else if (msgString.startsWith("Delete")){
+            String usernameToDelete = msgString.split(":")[1].trim();
+            deleteChannel(usernameToDelete);
+        }
+        else {
+            System.out.println("Server received: " + msgString);
         }
     }
 
+    private void deleteChannel(String usernameToDelete) {
+        for (Channel channel : allChannels) {
+            String username = channel.attr(USER_NAME).get();
+            if (username != null && username.equalsIgnoreCase(usernameToDelete)) {
+                channel.writeAndFlush("KickedOut\n");
+                channel.close();  // Close the channel associated with the username
+                System.out.println("Disconnected user: " + username);
+                break;  // Assuming only one channel per username, break after found
+            }
+        }
+    }
+
+    private void sendNewUserToManager(String newUser) {
+        if (newUser == null) return; //
+        for (Channel channel : allChannels) {
+            if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {
+                channel.writeAndFlush("NewUser: " + newUser + "\n");
+                System.out.println("Sent new user to manager: " + newUser);
+            }
+        }
+    }
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
         ctx.flush(); // 将之前接收到的信息冲刷到远程节点
     }
+
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {

@@ -1,7 +1,7 @@
 package client;
 import whiteBoard.WhiteBoardEventListener;
 import whiteBoard.Whiteboard;
-import whiteBoard.LoginDialog;
+import whiteBoard.Dialogs;
 import java.net.ConnectException;
 
 public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver {
@@ -17,7 +17,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         client = new Client(host, port);
         clientHandler = new ClientHandler(this);
         whiteboard = new Whiteboard(this);
-        userName = LoginDialog.showLoginDialog();
+        userName = Dialogs.showLoginDialog();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         } catch (ConnectException | InterruptedException e) {
 
             // 捕获特定的 ConnectException
-            LoginDialog.showErrorDialog("Cannot connect to server at " +
+            Dialogs.showErrorDialog("Cannot connect to server at " +
                     client.getHost() + ":" + client.getPort() + ". Please ensure the server is running.");
 
             System.exit(1);
@@ -48,11 +48,10 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
 
     @Override
     public void messageReceived(String message) {
-        System.out.println("ClientApp: message Received: " + message);
         if (message.equals("Manager")){
             clientHandler.sendMessage("UserName: "+ userName + "\n");
             whiteboard.managerMode();
-            LoginDialog.showAdminWelcomeMessage();
+            Dialogs.showAdminWelcomeMessage();
             whiteboard.start();
 
         }
@@ -63,6 +62,18 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
 
         if (message.startsWith("wb")){
             whiteboard.parseMessage(message);
+        }
+        else if (message.startsWith("NewUser")){
+            String newUser = message.split(":")[1].trim();
+            whiteboard.addUser(newUser);
+            System.out.println("Received new user: " + newUser);
+        }
+        else if (message.equals("KickedOut")){
+            Dialogs.showKickOutMessage();
+            whiteboard.shunDown();
+        }
+        else {
+            System.out.println("Client received: " + message);
         }
     }
 

@@ -2,12 +2,12 @@ package whiteBoard;
 
 import javax.swing.*;
 
-public class LoginDialog {
+public class Dialogs {
     public static String showLoginDialog() {
         while (true) {
             String userName = JOptionPane.showInputDialog(null, "Enter your name:", "Login", JOptionPane.PLAIN_MESSAGE);
             if (userName != null && !userName.trim().isEmpty()) {
-                return userName.trim(); // 返回有效的非空用户名
+                return userName.trim(); //
             } else {
                 JOptionPane.showMessageDialog(null, "You must enter a name to continue.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
@@ -20,6 +20,12 @@ public class LoginDialog {
 
     public static void showErrorDialog(String message) {
         JOptionPane.showMessageDialog(null, message, "Connection Error", JOptionPane.ERROR_MESSAGE);
+    }
+    public static void showSererErrorDialog(String message) {
+        JOptionPane.showMessageDialog(null, message, "Server refused the connect", JOptionPane.ERROR_MESSAGE);
+    }
+    public static void showKickOutMessage() {
+        JOptionPane.showMessageDialog(null, "User Kicked Out");
     }
 
 }

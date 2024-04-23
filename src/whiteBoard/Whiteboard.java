@@ -6,12 +6,17 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 public class Whiteboard extends JFrame {
     private DrawArea drawArea;
     private ToolPanel toolsPanel;
+
+    private ManagerPanel managerPanel;
     private ChatArea chatArea;
     private boolean isManager = false;
+
+
 
     private WhiteBoardEventListener listener;
 
@@ -37,6 +42,7 @@ public class Whiteboard extends JFrame {
         chatArea = new ChatArea();
         drawArea = new DrawArea();
         toolsPanel = new ToolPanel(drawArea, isManager);
+        managerPanel = new ManagerPanel();
         drawArea.setSize(800, 600);
     }
 
@@ -81,8 +87,14 @@ public class Whiteboard extends JFrame {
             listener.onDraw("chat " + message + "\n");
         });
 
-    }
+        managerPanel.getKickOutButton().addActionListener(e -> {
+            String userName = managerPanel.kickOutSelectedUsers();
+            if (!userName.equals(" ")) {
+                listener.onDraw("Delete: " + userName + "\n");
+            }
+        });
 
+    }
     public void start() {
         SwingUtilities.invokeLater(() -> setVisible(true));
     }
@@ -100,6 +112,14 @@ public class Whiteboard extends JFrame {
     }
     public void managerMode(){
         toolsPanel.setManager();
+        getContentPane().add(managerPanel, BorderLayout.WEST);
+    }
+
+    public void addUser(String newUser){
+        managerPanel.addUser(newUser);
+    }
+    public void shunDown(){
+        System.exit(0);
     }
 }
 

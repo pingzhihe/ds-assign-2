@@ -2,6 +2,7 @@ package client;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import whiteBoard.Dialogs;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     private ChannelHandlerContext ctx;
@@ -29,6 +30,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         cause.printStackTrace();
         ctx.close(); // Close the connection on error
+        Dialogs.showSererErrorDialog(cause.getMessage());
     }
 
     public ClientHandler(ServerMessageReceiver listener) {
