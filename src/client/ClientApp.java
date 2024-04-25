@@ -46,14 +46,14 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
     public void messageReceived(String message) {
         message = message.trim();
         if (message.equals("Manager")){
-            clientHandler.sendMessage("UserName: "+ userName + "\n");
+            System.out.println(userName);
+            clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
             whiteboard.managerMode();
             Dialogs.showAdminWelcomeMessage();
             whiteboard.start();
-
         }
         else if (message.equals("Normal")){
-            clientHandler.sendMessage("UserName: "+ userName + "\n");
+            clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
             whiteboard.start();
         }
 

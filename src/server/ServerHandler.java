@@ -78,6 +78,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
 
         } else if (msg.startsWith("UserName")) {
+            System.out.println("sfjsfjshfieuf");
             String[] parts = msg.split(":", 2);
             if (parts.length > 1) {
                 String username = parts[1].trim();
@@ -107,7 +108,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         for (Channel channel : allChannels) {
             String username = channel.attr(USER_NAME).get();
             if (username != null && username.equalsIgnoreCase(usernameToDelete)) {
-                channel.writeAndFlush("KickedOut\n");
+                sendMessage(channel, "KickedOut");
                 channel.close();  // Close the channel associated with the username
                 System.out.println("Disconnected user: " + username);
                 break;  // Assuming only one channel per username, break after found
@@ -119,7 +120,10 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (newUser == null) return; //
         for (Channel channel : allChannels) {
             if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {
-                channel.writeAndFlush("NewUser: " + newUser + "\n");
+                newUser = "TXT:NewUser: " + newUser + "\n";
+                ByteBuf msgBuf = channel.alloc().buffer();
+                msgBuf.writeBytes(newUser.getBytes(CharsetUtil.UTF_8));
+                channel.writeAndFlush(msgBuf);
                 System.out.println("Sent new user to manager: " + newUser);
             }
         }
