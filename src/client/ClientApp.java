@@ -79,7 +79,10 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
             String chat = message.substring(5);
             whiteboard.receiveChat(chat);
 
-        } else {
+        } else if (message.startsWith("clear")){
+            whiteboard.clear();
+        }
+        else {
             System.out.println("Client received: " + message);
         }
     }

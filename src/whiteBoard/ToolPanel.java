@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class ToolPanel extends JPanel {
-    private JButton clearBtn, textBtn, penBtn, eraserBtn, saveAsBtn, loadBtn,saveBtn;
+    private JButton clearBtn, textBtn, penBtn, eraserBtn, saveAsBtn, loadBtn,saveBtn, newBtn;
     private JSlider thicknessSlider;
     private JComboBox<String> shapeSelector;
     private JColorChooser colorChooser;
@@ -32,11 +32,13 @@ public class ToolPanel extends JPanel {
         saveAsBtn = new JButton("Save_As");
         loadBtn = new JButton("Load");
         saveBtn = new JButton("Save");
+        newBtn = new JButton("New");
         String[] shapes = {"Line", "Oval", "Rectangle", "Circle"};
         shapeSelector = new JComboBox<>(shapes);
         saveAsBtn.setVisible(false);
         loadBtn.setVisible(false);
         saveBtn.setVisible(false);
+        newBtn.setVisible(false);
     }
 
     private void setupColorChooser() {
@@ -68,6 +70,7 @@ public class ToolPanel extends JPanel {
         add(saveAsBtn);
         add(loadBtn);
         add(saveBtn);
+        add(newBtn);
 
         setupActions();
     }
@@ -99,6 +102,10 @@ public class ToolPanel extends JPanel {
         return saveBtn;
     }
 
+    public JButton getNewBtn(){
+        return newBtn;
+    }
+
     public String saveFile() {
         try{
             JFileChooser fileChooser = new JFileChooser();
@@ -115,7 +122,7 @@ public class ToolPanel extends JPanel {
         return "";
     }
 
-    public void saveAs(String filePath) {
+    public void quickSave(String filePath) {
         try {
             ImageIO.write(drawArea.getImage(), "PNG", new File(filePath));
         } catch (IOException ex) {
@@ -140,6 +147,7 @@ public class ToolPanel extends JPanel {
         saveAsBtn.setVisible(true);
         loadBtn.setVisible(true);
         saveBtn.setVisible(true);
+        newBtn.setVisible(true);
     }
 
 }

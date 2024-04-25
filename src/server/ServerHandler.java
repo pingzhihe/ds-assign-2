@@ -86,7 +86,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
 
         } else if (msg.startsWith("UserName")) {
-            System.out.println("sfjsfjshfieuf");
             String[] parts = msg.split(":", 2);
             if (parts.length > 1) {
                 String username = parts[1].trim();
@@ -99,7 +98,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 String usernameToDelete = parts[1].trim();
                 deleteChannel(usernameToDelete);
             }
-        } else {
+        }else if (msg.startsWith("clear")){
+            for (Channel channel : allChannels) {
+                if (Boolean.FALSE.equals(channel.attr(MANAGER).get())) {
+                    sendMessage(channel, "clear\n");
+                }
+            }
+        }
+
+        else {
             System.out.println("Server received: " + msg);
         }
     }

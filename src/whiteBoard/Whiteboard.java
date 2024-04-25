@@ -117,16 +117,27 @@ public class Whiteboard extends JFrame {
                 throw new RuntimeException(ex);
             }
         });
+
         toolsPanel.getSaveBtn().addActionListener(e -> {
             if (filePath.equals("")) {
                 filePath = toolsPanel.saveFile();
             }
             else{
-                toolsPanel.saveAs(filePath);
+                toolsPanel.quickSave(filePath);
             }
         });
 
-
+        toolsPanel.getNewBtn().addActionListener(e -> {
+            if (filePath.equals("")) {
+                toolsPanel.saveFile();
+            }
+            else{
+                toolsPanel.quickSave(filePath);
+            }
+            drawArea.clear();
+            listener.onDraw("clear\n");
+            filePath = "";
+        });
     }
 
 
@@ -184,6 +195,10 @@ public class Whiteboard extends JFrame {
     }
     public void receiveChat(String message){
         chatArea.getChatArea().append(message + "\n");
+    }
+
+    public void clear() {
+        drawArea.clear();
     }
 
 }
