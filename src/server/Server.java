@@ -5,10 +5,9 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
+
 
 public class Server {
     private int port;
@@ -29,8 +28,9 @@ public class Server {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             ch.config().setOption(ChannelOption.TCP_NODELAY, true);
                             ch.pipeline().addLast(
-                                    new DelimiterBasedFrameDecoder(9102, Unpooled.wrappedBuffer(new byte[]{'\n'})),
-                                    new StringDecoder(), new StringEncoder(), new ServerHandler());
+                                    new LengthFieldBasedFrameDecoder(1048576, 0, 4, 0, 4),
+                                    new LengthFieldPrepender(4),
+                                    new ServerHandler());
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)

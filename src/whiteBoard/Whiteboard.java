@@ -127,4 +127,3 @@ public class Whiteboard extends JFrame {
     }
 }
 
-

@@ -22,10 +22,8 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
 
     @Override
     public void onDraw(String message) {
-        clientHandler.sendMessage(message);
+        clientHandler.sendMessage("TXT:" + message);
     }
-
-
     public void startConnection() {
         try {
             client.connect(clientHandler);
@@ -39,8 +37,6 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         }
 
     }
-
-
     public void shutdown() {
         client.shutdown();
     }
@@ -48,6 +44,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
 
     @Override
     public void messageReceived(String message) {
+        message = message.trim();
         if (message.equals("Manager")){
             clientHandler.sendMessage("UserName: "+ userName + "\n");
             whiteboard.managerMode();

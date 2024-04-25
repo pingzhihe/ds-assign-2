@@ -1,14 +1,17 @@
 package server;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.util.AttributeKey;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
@@ -20,53 +23,84 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private HashMap<String, String> chatHistory = new HashMap<>();
     public void channelActive(ChannelHandlerContext ctx) {
         allChannels.add(ctx.channel());
+        String role = !hasManager ? "Manager" : "Normal";
+        String message = "TXT:" + role + "\n";
         if (!hasManager) {
             hasManager = true;
-            ctx.writeAndFlush("Manager\n");
             ctx.channel().attr(MANAGER).set(true);
-        }
-        else{
+        } else {
             ctx.channel().attr(MANAGER).set(false);
-            ctx.writeAndFlush("Normal\n");
-
         }
+
+        ByteBuf msgBuf = ctx.alloc().buffer();
+        msgBuf.writeBytes(message.getBytes(CharsetUtil.UTF_8));
+        ctx.writeAndFlush(msgBuf);
     }
+
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
-        String msgString = msg.toString();
-        if (msgString.startsWith("wb")) {
-            for (Channel channel : allChannels) {
-                if (channel != ctx.channel()) {
-                    channel.writeAndFlush(msgString + "\n");
-                }
-            }
-        }
-        else if (msgString.startsWith("chat")){
-            System.out.println(msgString);
-            String[] parts = msgString.split(":");
-            String message = parts[1].trim();
-            String username = ctx.channel().attr(USER_NAME).get();
-            chatHistory.put(username, message);
-            for (Channel channel : allChannels) {
-                for (String user : chatHistory.keySet()) {
-                    channel.writeAndFlush("chat " + user + ": " + chatHistory.get(user) + "\n");
-                }
-            }
-        }
-        else if (msgString.startsWith("UserName")){
-            String username = msgString.split(":")[1].trim();
-            ctx.channel().attr(USER_NAME).set(username);
-            System.out.println("Server received: " + msgString);
-            sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
+        ByteBuf buf = (ByteBuf) msg;
+        if (buf.readableBytes() < 4) {
+            return; // Not enough bytes to read the type indicator
         }
 
-        else if (msgString.startsWith("Delete")){
-            String usernameToDelete = msgString.split(":")[1].trim();
-            deleteChannel(usernameToDelete);
+        buf.markReaderIndex(); // Mark the current reader index
+        byte[] typeIndicator = new byte[4];
+        buf.readBytes(typeIndicator);
+        String type = new String(typeIndicator, StandardCharsets.UTF_8);
+        buf.resetReaderIndex();
+
+        if ("TXT:".equals(type)) {
+            buf.skipBytes(4); // Skip the type prefix
+            String msgString = buf.toString(CharsetUtil.UTF_8);
+            processMessage(ctx, msgString.trim());
         }
-        else {
-            System.out.println("Server received: " + msgString);
+    }
+
+    private void processMessage(ChannelHandlerContext ctx, String msg) {
+        if (msg.startsWith("wb")) {
+            for (Channel channel : allChannels) {
+                if (channel != ctx.channel()) {
+                    sendMessage(channel, msg + "\n");
+                }
+            }
+        } else if (msg.startsWith("chat")) {
+            String[] parts = msg.split(":", 2);  // Split only into two parts
+            if (parts.length > 1) {
+                String message = parts[1].trim();
+                String username = ctx.channel().attr(USER_NAME).get();
+                chatHistory.put(username, message);
+                for (Channel channel : allChannels) {
+                    for (String user : chatHistory.keySet()) {
+                        sendMessage(channel, "chat " + user + ": " + chatHistory.get(user) + "\n");
+                    }
+                }
+            }
+
+        } else if (msg.startsWith("UserName")) {
+            String[] parts = msg.split(":", 2);
+            if (parts.length > 1) {
+                String username = parts[1].trim();
+                ctx.channel().attr(USER_NAME).set(username);
+                sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
+            }
+        } else if (msg.startsWith("Delete")) {
+            String[] parts = msg.split(":", 2);
+            if (parts.length > 1) {
+                String usernameToDelete = parts[1].trim();
+                deleteChannel(usernameToDelete);
+            }
+        } else {
+            System.out.println("Server received: " + msg);
         }
+    }
+
+
+    private void sendMessage(Channel channel, String message) {
+        message = "TXT:" + message;
+        ByteBuf msgBuf = channel.alloc().buffer();
+        msgBuf.writeBytes(message.getBytes(CharsetUtil.UTF_8));
+        channel.writeAndFlush(msgBuf);
     }
 
     private void deleteChannel(String usernameToDelete) {

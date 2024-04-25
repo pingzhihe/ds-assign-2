@@ -5,10 +5,8 @@ import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 
 import java.net.ConnectException;
 
@@ -31,14 +29,14 @@ public class Client{
             Bootstrap bootstrap = new Bootstrap()
                     .group(group)
                     .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
+                    .handler(   new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
                             ch.config().setOption(ChannelOption.TCP_NODELAY, true);
                             ch.pipeline().addLast(
-                                    new DelimiterBasedFrameDecoder(9102, Unpooled.wrappedBuffer(new byte[]{'\n'})),
-                                    new StringDecoder(),
-                                    new StringEncoder(), handler);
+                                    new LengthFieldBasedFrameDecoder(1048576, 0, 4, 0, 4),
+                                    new LengthFieldPrepender(4),
+                                    handler);
                         }
                     });
 
