@@ -33,4 +33,6 @@ public class Dialogs {
         JOptionPane.showMessageDialog(null, "You have been kicked out!");
     }
 
+
+
 }

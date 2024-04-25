@@ -11,9 +11,11 @@ import io.netty.util.ResourceLeakDetector;
 import io.netty.util.ResourceLeakDetector.Level;
 
 public class Server {
+    private final String host;
     private int port;
 
-    public Server(int port) {
+    public Server(String host, int port) {
+        this.host = host;
         this.port = port;
         ResourceLeakDetector.setLevel(Level.PARANOID);
     }
@@ -47,6 +49,9 @@ public class Server {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        new Server(8080).start();
+
+        String host = args.length > 1 ? args[0] : "localhost";
+        int port = args.length > 2 ? Integer.parseInt(args[1]) : 8070;
+        new Server(host, port).start();
     }
 }

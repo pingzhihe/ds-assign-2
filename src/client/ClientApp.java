@@ -12,6 +12,8 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
 
     private String userName;
 
+    boolean isManager = false;
+
     public ClientApp(String host, int port) {
 
         // Initialize the client and clientHandler
@@ -62,7 +64,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
             clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
             whiteboard.start();
         }
-
+        
         else if (message.startsWith("wb")){
             whiteboard.parseMessage(message);
         }
@@ -82,6 +84,15 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         } else if (message.startsWith("clear")){
             whiteboard.clear();
         }
+        else if (message.startsWith("You have been connected!")){
+            if (isManager){
+                System.out.println("Client received: " + message);
+                clientHandler.sendMessage("TXT:manager\n");
+            }
+            else{
+                clientHandler.sendMessage("TXT:normal\n");
+            }
+        }
         else {
             System.out.println("Client received: " + message);
         }
@@ -91,9 +102,36 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         System.out.println("Received image data");
         whiteboard.receiveImg(img);
     }
+    public void setManager(boolean isManager){
+        this.isManager = isManager;
+    }
 
     public static void main(String[]args){
-        ClientApp clientApp = new ClientApp("localhost", 8080);
+        if (args.length < 1) {
+            System.err.println("Usage: java ClientApp [create|join] [host] [port]");
+            System.exit(1);
+        }
+        String mode = args[0];  // Expected "create" or "join"
+        String host = args.length > 1 ? args[1] : "localhost";  // Default to localhost if not specified
+        int port = args.length > 2 ? Integer.parseInt(args[2]) : 8070;  // Default to port 8080 if not specified
+
+        if (!mode.equals("create") && !mode.equals("join")) {
+            System.err.println("Invalid mode. Use 'create' or 'join'.");
+            System.exit(1);
+        }
+
+        ClientApp clientApp = new ClientApp(host, port);
+        if (mode.equals("create")) {
+            clientApp.isManager = true;
+            System.out.println("Creating a new whiteboard session...");
+        }
+        else{
+            System.out.println("Joining an existing whiteboard session...");
+        }
+
         clientApp.startConnection();
+
+
+
     }
 }

@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private static boolean hasManager = false;
+
     private static final AttributeKey<String> USER_NAME = AttributeKey.valueOf("USER_NAME");
     private static final AttributeKey<Boolean> MANAGER = AttributeKey.valueOf("MANAGER");
 
@@ -25,14 +25,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
 
         allChannels.add(ctx.channel());
-        String role = !hasManager ? "Manager" : "Normal";
-        String message = "TXT:" + role + "\n";
-        if (!hasManager) {
-            hasManager = true;
-            ctx.channel().attr(MANAGER).set(true);
-        } else {
-            ctx.channel().attr(MANAGER).set(false);
-        }
+        String message = "TXT:You have been connected!" + "\n";
 
         ByteBuf msgBuf = ctx.alloc().buffer();
         msgBuf.writeBytes(message.getBytes(CharsetUtil.UTF_8));
@@ -68,7 +61,16 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void processMessage(ChannelHandlerContext ctx, String msg) {
-        if (msg.startsWith("wb")) {
+        if (msg.startsWith("manager")) {
+            ctx.channel().attr(MANAGER).set(true);
+            sendMessage(ctx.channel(), "Manager\n");
+        }
+
+        else if (msg.startsWith("normal")) {
+            sendMessage(ctx.channel(), "Normal\n");
+            ctx.channel().attr(MANAGER).set(false);
+        }
+        else if (msg.startsWith("wb")) {
             for (Channel channel : allChannels) {
                 if (channel != ctx.channel()) {
                     sendMessage(channel, msg + "\n");
