@@ -102,7 +102,7 @@ public class Whiteboard extends JFrame {
             }
         });
 
-        toolsPanel.getSaveBtn().addActionListener(e -> {
+        toolsPanel.getSaveAsBtn().addActionListener(e -> {
             filePath = toolsPanel.saveFile();
             System.out.println(filePath);
         });
@@ -117,7 +117,18 @@ public class Whiteboard extends JFrame {
                 throw new RuntimeException(ex);
             }
         });
+        toolsPanel.getSaveBtn().addActionListener(e -> {
+            if (filePath.equals("")) {
+                filePath = toolsPanel.saveFile();
+            }
+            else{
+                toolsPanel.saveAs(filePath);
+            }
+        });
+
+
     }
+
 
     /**
      * Converts a BufferedImage to a byte array.
@@ -174,5 +185,6 @@ public class Whiteboard extends JFrame {
     public void receiveChat(String message){
         chatArea.getChatArea().append(message + "\n");
     }
+
 }
 

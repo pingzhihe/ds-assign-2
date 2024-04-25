@@ -9,7 +9,7 @@ import java.io.IOException;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class ToolPanel extends JPanel {
-    private JButton clearBtn, textBtn, penBtn, eraserBtn, saveBtn, loadBtn;
+    private JButton clearBtn, textBtn, penBtn, eraserBtn, saveAsBtn, loadBtn,saveBtn;
     private JSlider thicknessSlider;
     private JComboBox<String> shapeSelector;
     private JColorChooser colorChooser;
@@ -29,12 +29,14 @@ public class ToolPanel extends JPanel {
         textBtn = new JButton("Text");
         penBtn = new JButton("Pen");
         eraserBtn = new JButton("Eraser");
-        saveBtn = new JButton("Save");
+        saveAsBtn = new JButton("Save_As");
         loadBtn = new JButton("Load");
+        saveBtn = new JButton("Save");
         String[] shapes = {"Line", "Oval", "Rectangle", "Circle"};
         shapeSelector = new JComboBox<>(shapes);
-        saveBtn.setVisible(false);
+        saveAsBtn.setVisible(false);
         loadBtn.setVisible(false);
+        saveBtn.setVisible(false);
     }
 
     private void setupColorChooser() {
@@ -63,8 +65,9 @@ public class ToolPanel extends JPanel {
         add(penBtn);
         add(eraserBtn);
         add(shapeSelector);
-        add(saveBtn);
+        add(saveAsBtn);
         add(loadBtn);
+        add(saveBtn);
 
         setupActions();
     }
@@ -79,42 +82,21 @@ public class ToolPanel extends JPanel {
             drawArea.setState(selectedShape);
         });
 
-//        saveBtn.addActionListener(e -> {
-//            try {
-//                JFileChooser fileChooser = new JFileChooser();
-//                fileChooser.setDialogTitle("Specify a file to save");
-//                int userSelection = fileChooser.showSaveDialog(this);
-//                if (userSelection == JFileChooser.APPROVE_OPTION) {
-//                    File fileToSave = fileChooser.getSelectedFile();
-//                    ImageIO.write(drawArea.getImage(), "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
-//                }
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
-//        });
-//
-//        loadBtn.addActionListener(e -> {
-//            JFileChooser fileChooser = new JFileChooser();
-//            fileChooser.setAcceptAllFileFilterUsed(false);
-//            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image files", "jpg", "png"));
-//            int option = fileChooser.showOpenDialog(this);
-//            if (option == JFileChooser.APPROVE_OPTION) {
-//                File file = fileChooser.getSelectedFile();
-//                drawArea.loadImage(file);
-//            }
-//        });
-
         thicknessSlider.addChangeListener(e -> {
             int thickness = thicknessSlider.getValue();
             drawArea.setThickness(thickness);
         });
     }
-    public JButton getSaveBtn(){
-        return saveBtn;
+    public JButton getSaveAsBtn(){
+        return saveAsBtn;
     }
 
     public JButton getLoadBtn(){
         return loadBtn;
+    }
+
+    public JButton getSaveBtn(){
+        return saveBtn;
     }
 
     public String saveFile() {
@@ -133,7 +115,13 @@ public class ToolPanel extends JPanel {
         return "";
     }
 
-
+    public void saveAs(String filePath) {
+        try {
+            ImageIO.write(drawArea.getImage(), "PNG", new File(filePath));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
     public BufferedImage loadFile() throws IOException {
         JFileChooser fileChooser = new JFileChooser();
         fileChooser.setAcceptAllFileFilterUsed(false);
@@ -149,8 +137,9 @@ public class ToolPanel extends JPanel {
     }
 
     public void setManager(){
-        saveBtn.setVisible(true);
+        saveAsBtn.setVisible(true);
         loadBtn.setVisible(true);
+        saveBtn.setVisible(true);
     }
 
 }
