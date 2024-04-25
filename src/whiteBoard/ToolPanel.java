@@ -3,6 +3,7 @@ package whiteBoard;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -77,35 +78,74 @@ public class ToolPanel extends JPanel {
             String selectedShape = (String) shapeSelector.getSelectedItem();
             drawArea.setState(selectedShape);
         });
-        saveBtn.addActionListener(e -> {
-            try {
-                JFileChooser fileChooser = new JFileChooser();
-                fileChooser.setDialogTitle("Specify a file to save");
-                int userSelection = fileChooser.showSaveDialog(this);
-                if (userSelection == JFileChooser.APPROVE_OPTION) {
-                    File fileToSave = fileChooser.getSelectedFile();
-                    ImageIO.write(drawArea.getImage(), "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        });
 
-        loadBtn.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image files", "jpg", "png"));
-            int option = fileChooser.showOpenDialog(this);
-            if (option == JFileChooser.APPROVE_OPTION) {
-                File file = fileChooser.getSelectedFile();
-                drawArea.loadImage(file);
-            }
-        });
+//        saveBtn.addActionListener(e -> {
+//            try {
+//                JFileChooser fileChooser = new JFileChooser();
+//                fileChooser.setDialogTitle("Specify a file to save");
+//                int userSelection = fileChooser.showSaveDialog(this);
+//                if (userSelection == JFileChooser.APPROVE_OPTION) {
+//                    File fileToSave = fileChooser.getSelectedFile();
+//                    ImageIO.write(drawArea.getImage(), "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
+//                }
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//        });
+//
+//        loadBtn.addActionListener(e -> {
+//            JFileChooser fileChooser = new JFileChooser();
+//            fileChooser.setAcceptAllFileFilterUsed(false);
+//            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image files", "jpg", "png"));
+//            int option = fileChooser.showOpenDialog(this);
+//            if (option == JFileChooser.APPROVE_OPTION) {
+//                File file = fileChooser.getSelectedFile();
+//                drawArea.loadImage(file);
+//            }
+//        });
 
         thicknessSlider.addChangeListener(e -> {
             int thickness = thicknessSlider.getValue();
             drawArea.setThickness(thickness);
         });
+    }
+    public JButton getSaveBtn(){
+        return saveBtn;
+    }
+
+    public JButton getLoadBtn(){
+        return loadBtn;
+    }
+
+    public String saveFile() {
+        try{
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Specify a file to save");
+            int userSelection = fileChooser.showSaveDialog(this);
+            if (userSelection == JFileChooser.APPROVE_OPTION) {
+                File fileToSave = fileChooser.getSelectedFile();
+                ImageIO.write(drawArea.getImage(), "PNG", new File(fileToSave.getAbsolutePath() + ".png"));
+                return fileToSave.getAbsolutePath() + ".png";
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return "";
+    }
+
+
+    public BufferedImage loadFile() throws IOException {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image files", "jpg", "png"));
+        int option = fileChooser.showOpenDialog(this);
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            BufferedImage loadedImage = ImageIO.read(file);
+            drawArea.loadImage(file);
+            return loadedImage;
+        }
+        return null;
     }
 
     public void setManager(){

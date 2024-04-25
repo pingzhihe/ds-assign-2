@@ -1,10 +1,13 @@
 package client;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.CharsetUtil;
 import whiteBoard.Dialogs;
+
+import java.nio.charset.StandardCharsets;
 
 public class ClientHandler extends ChannelInboundHandlerAdapter {
     private ChannelHandlerContext ctx;
@@ -53,8 +56,19 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             String msgString= buf.toString(CharsetUtil.UTF_8);
             listener.messageReceived(msgString);
         }
+        else if ("IMG:".equals(type)) {
+            buf.skipBytes(4);
+            byte[] img = new byte[buf.readableBytes()];
+            buf.readBytes(img);
+            listener.imgReceived(img);
+        }
     }
-
+    public void sendImg(byte[] img) {
+        ByteBuf buffer = Unpooled.buffer(4 + img.length);
+        buffer.writeBytes("IMG:".getBytes(StandardCharsets.UTF_8));
+        buffer.writeBytes(img);
+        ctx.writeAndFlush(buffer);
+    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
@@ -66,4 +80,6 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public ClientHandler(ServerMessageReceiver listener) {
         this.listener = listener;
     }
+
+
 }

@@ -183,6 +183,17 @@ public class DrawArea extends JComponent {
             JOptionPane.showMessageDialog(this, "Image could not be read", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+    public void loadBufferImage(BufferedImage img){
+        image = img;
+        g2 = (Graphics2D) image.getGraphics(); // 更新 Graphics2D 对象
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setPaint(currentColor);
+        g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this))); // 可选，根据图像大小调整组件大小
+        revalidate(); // 通知布局管理器组件大小可能改变
+        repaint();
+    }
+
 
 
 

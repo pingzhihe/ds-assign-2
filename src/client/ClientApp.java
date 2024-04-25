@@ -2,6 +2,7 @@ package client;
 import whiteBoard.WhiteBoardEventListener;
 import whiteBoard.Whiteboard;
 import whiteBoard.Dialogs;
+
 import java.net.ConnectException;
 
 public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver {
@@ -24,6 +25,11 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
     public void onDraw(String message) {
         clientHandler.sendMessage("TXT:" + message);
     }
+
+    public void onImg(byte[] img){
+        clientHandler.sendImg(img);
+    }
+
     public void startConnection() {
         try {
             client.connect(clientHandler);
@@ -77,7 +83,11 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
             System.out.println("Client received: " + message);
         }
     }
-
+    @Override
+    public void imgReceived(byte[] img){
+        System.out.println("Received image data");
+        whiteboard.receiveImg(img);
+    }
 
     public static void main(String[]args){
         ClientApp clientApp = new ClientApp("localhost", 8080);

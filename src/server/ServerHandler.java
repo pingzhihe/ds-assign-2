@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class ServerHandler extends ChannelInboundHandlerAdapter {
+
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private static boolean hasManager = false;
     private static final AttributeKey<String> USER_NAME = AttributeKey.valueOf("USER_NAME");
@@ -22,6 +23,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private HashMap<String, String> chatHistory = new HashMap<>();
     public void channelActive(ChannelHandlerContext ctx) {
+
         allChannels.add(ctx.channel());
         String role = !hasManager ? "Manager" : "Normal";
         String message = "TXT:" + role + "\n";
@@ -54,6 +56,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             buf.skipBytes(4); // Skip the type prefix
             String msgString = buf.toString(CharsetUtil.UTF_8);
             processMessage(ctx, msgString.trim());
+        }
+        else if("IMG:".equals(type)){
+            buf.skipBytes(4);
+            byte[] img = new byte[buf.readableBytes()];
+            buf.readBytes(img);
+            processImageData(img);
         }
     }
 
@@ -96,6 +104,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
+    private void processImageData(byte[] imageData) {
+        System.out.println("Received image data");
+        for (Channel channel : allChannels) {
+            if (Boolean.FALSE.equals(channel.attr(MANAGER).get())) {
+                ByteBuf imgBuf = channel.alloc().buffer();
+                imgBuf.writeBytes("IMG:".getBytes(StandardCharsets.UTF_8));
+                imgBuf.writeBytes(imageData);
+                channel.writeAndFlush(imgBuf);
+            }
+        }
+    }
 
     private void sendMessage(Channel channel, String message) {
         message = "TXT:" + message;
