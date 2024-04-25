@@ -56,12 +56,14 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             buf.skipBytes(4); // Skip the type prefix
             String msgString = buf.toString(CharsetUtil.UTF_8);
             processMessage(ctx, msgString.trim());
+            buf.release();
         }
         else if("IMG:".equals(type)){
             buf.skipBytes(4);
             byte[] img = new byte[buf.readableBytes()];
             buf.readBytes(img);
             processImageData(img);
+            buf.release();
         }
     }
 

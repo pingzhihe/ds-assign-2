@@ -7,6 +7,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 
 import java.net.ConnectException;
 
@@ -21,6 +23,7 @@ public class Client{
         this.host = host;
         this.port = port;
         this.group = new NioEventLoopGroup();
+        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.PARANOID);
     }
 
 

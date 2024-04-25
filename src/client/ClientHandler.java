@@ -55,12 +55,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             buf.skipBytes(4);
             String msgString= buf.toString(CharsetUtil.UTF_8);
             listener.messageReceived(msgString);
+            buf.release();
         }
         else if ("IMG:".equals(type)) {
             buf.skipBytes(4);
             byte[] img = new byte[buf.readableBytes()];
             buf.readBytes(img);
             listener.imgReceived(img);
+            buf.release();
         }
     }
     public void sendImg(byte[] img) {

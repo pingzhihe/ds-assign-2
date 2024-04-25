@@ -7,13 +7,15 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-
+import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 
 public class Server {
     private int port;
 
     public Server(int port) {
         this.port = port;
+        ResourceLeakDetector.setLevel(Level.PARANOID);
     }
 
     public void start() throws InterruptedException {
