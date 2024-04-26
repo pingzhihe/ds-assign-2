@@ -78,6 +78,14 @@ public class ManagerPanel extends JPanel {
         return kickOutButton;
     }
 
+    public void removeUser(String username) {
+        Vector<Vector> dataVector = tableModel.getDataVector();
+        for (int i = dataVector.size() - 1; i >= 0; i--) {
+            if (dataVector.get(i).get(1).equals(username)) {
+                tableModel.removeRow(i);
+            }
+        }
+    }
 
 
 }

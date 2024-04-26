@@ -48,9 +48,9 @@ public class Dialogs {
         JOptionPane.showMessageDialog(null, "Waiting for approval from the manager.");
     }
 
-    public static void showManagerError(){
-        JOptionPane.showMessageDialog(null, "Only one manager is allowed at the session");
-
+    public static void showManagerShutDown(){
+        JOptionPane.showMessageDialog(null, "Manager has shut down the session. Exiting application.");
     }
+
 
 }

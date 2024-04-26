@@ -32,6 +32,7 @@ public class Whiteboard extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
+                listener.onWhiteBoardClose();
                 System.exit(0);
             }
         });
@@ -208,7 +209,12 @@ public class Whiteboard extends JFrame {
             throw new RuntimeException(e);
         }
     }
-
+    public void shutDown(){
+        System.exit(0);
+    }
+    public void removeUser(String removedUser){
+        managerPanel.removeUser(removedUser);
+    }
 
 }
 

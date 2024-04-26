@@ -21,6 +21,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         clientHandler = new ClientHandler(this);
         whiteboard = new Whiteboard(this);
         userName = Dialogs.showLoginDialog();
+        System.out.println("Client started at host: " + host + ", at port :" + port);
     }
 
     @Override
@@ -117,6 +118,15 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
                 clientHandler.sendMessage("TXT:normal\n");
             }
         }
+        else if (message.startsWith("shutdown")){
+            Dialogs.showManagerShutDown();
+            whiteboard.shunDown();
+        }
+        else if (message.startsWith("Removed")){
+            String removedUser = message.split(":")[1].trim();
+            whiteboard.removeUser(removedUser);
+        }
+
         else {
             System.out.println("Client received: " + message);
         }
@@ -125,6 +135,16 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
     public void imgReceived(byte[] img){
         System.out.println("Received image data");
         whiteboard.receiveImg(img);
+    }
+
+    @Override
+    public void onWhiteBoardClose(){
+        if (isManager){
+            clientHandler.sendMessage("TXT:shutdown\n");
+        }
+        else{
+            clientHandler.sendMessage("TXT:Delete:" + userName + "\n");
+        }
     }
 
     public static void main(String[]args){

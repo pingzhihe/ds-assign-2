@@ -149,6 +149,13 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 }
             }
         }
+        else if (msg.startsWith("shutdown")) {
+            for (Channel channel : allChannels) {
+                if (Boolean.FALSE.equals(channel.attr(MANAGER).get())) {
+                    sendMessage(channel, "shutdown\n");
+                }
+            }
+        }
 
         else {
             System.out.println("Server received: " + msg);
@@ -182,6 +189,12 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 channel.close();  // Close the channel associated with the username
                 System.out.println("Disconnected user: " + username);
                 break;  // Assuming only one channel per username, break after found
+            }
+        }
+
+        for (Channel channel : allChannels) {
+            if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {
+                sendMessage(channel, "Removed: " + usernameToDelete);
             }
         }
     }

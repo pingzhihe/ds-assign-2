@@ -18,6 +18,7 @@ public class Server {
         this.host = host;
         this.port = port;
         ResourceLeakDetector.setLevel(Level.PARANOID);
+        System.out.println("Server started on " + host + ":" + port);
     }
 
     public void start() throws InterruptedException {
@@ -64,6 +65,6 @@ public class Server {
         }
 
         new Server(host, port).start();
-        System.out.println("Server started on " + host + ":" + port);
+
     }
 }
