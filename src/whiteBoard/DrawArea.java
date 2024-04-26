@@ -193,8 +193,7 @@ public class DrawArea extends JComponent {
         revalidate(); // 通知布局管理器组件大小可能改变
         repaint();
     }
-
-
-
-
+    public BufferedImage getImageData(){
+        return (BufferedImage) image;
+    }
 }

@@ -83,6 +83,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
 
             if (command.equals("approve")){
                 clientHandler.sendMessage("TXT:approve:" + newUser + "\n");
+                clientHandler.sendImg(whiteboard.getImg());
                 whiteboard.addUser(newUser);
                 System.out.println("Received new user: " + newUser);
             }
@@ -125,9 +126,6 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         System.out.println("Received image data");
         whiteboard.receiveImg(img);
     }
-    public void setManager(boolean isManager){
-        this.isManager = isManager;
-    }
 
     public static void main(String[]args){
         if (args.length < 1) {
@@ -153,8 +151,6 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         }
 
         clientApp.startConnection();
-
-
 
     }
 }

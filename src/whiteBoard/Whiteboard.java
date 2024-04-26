@@ -201,5 +201,14 @@ public class Whiteboard extends JFrame {
         drawArea.clear();
     }
 
+    public byte[] getImg(){
+        try {
+            return bufferedImageToByteArray(drawArea.getImageData(), "PNG");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
 }
 

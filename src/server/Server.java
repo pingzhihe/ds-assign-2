@@ -40,7 +40,7 @@ public class Server {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
-            ChannelFuture f = b.bind(port).sync();
+            ChannelFuture f = b.bind(host, port).sync();
             f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
@@ -49,9 +49,21 @@ public class Server {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        String host = "localhost";  // 默认主机地址
+        int port = 8070;            // 默认端口
 
-        String host = args.length > 1 ? args[0] : "localhost";
-        int port = args.length > 2 ? Integer.parseInt(args[1]) : 8070;
+        if (args.length > 0) {
+            host = args[0];  // 如果存在参数，则第一个参数为主机地址
+        }
+        if (args.length > 1) {
+            try {
+                port = Integer.parseInt(args[1]);  // 第二个参数为端口，需要转换为整数
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid port number provided. Using default port 8070.");
+            }
+        }
+
         new Server(host, port).start();
+        System.out.println("Server started on " + host + ":" + port);
     }
 }
