@@ -33,6 +33,24 @@ public class Dialogs {
         JOptionPane.showMessageDialog(null, "You have been kicked out!");
     }
 
+    public static String showJoinMessage(String userName){
+        Object [] options = {"approve", "reject"};
+        int response = JOptionPane.showOptionDialog(null, userName + " wants to join the whiteboard.", "Join Request",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        if (response == JOptionPane.YES_OPTION){
+            return "approve";
+        }
+        else {
+            return "reject";
+        }
+    }
+    public static void showWaitingMessage(){
+        JOptionPane.showMessageDialog(null, "Waiting for approval from the manager.");
+    }
 
+    public static void showManagerError(){
+        JOptionPane.showMessageDialog(null, "Only one manager is allowed at the session");
+
+    }
 
 }

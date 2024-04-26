@@ -17,9 +17,10 @@ import java.util.HashMap;
 public class ServerHandler extends ChannelInboundHandlerAdapter {
 
     private static final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-
     private static final AttributeKey<String> USER_NAME = AttributeKey.valueOf("USER_NAME");
     private static final AttributeKey<Boolean> MANAGER = AttributeKey.valueOf("MANAGER");
+
+    private static boolean isManager = false;
 
     private HashMap<String, String> chatHistory = new HashMap<>();
     public void channelActive(ChannelHandlerContext ctx) {
@@ -61,15 +62,29 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void processMessage(ChannelHandlerContext ctx, String msg) {
+//        System.out.println("Manager: "+ isManager);
         if (msg.startsWith("manager")) {
-            ctx.channel().attr(MANAGER).set(true);
-            sendMessage(ctx.channel(), "Manager\n");
+            if (!isManager){
+                isManager = true;
+                ctx.channel().attr(MANAGER).set(true);
+                sendMessage(ctx.channel(), "Manager\n");
+            }
+            // Only one manager is allowed
+            else{
+                sendMessage(ctx.channel(), "ManagerError\n");
+            }
+        }
+        else if (msg.startsWith("normal")) {
+            if (isManager){
+                sendMessage(ctx.channel(), "Normal\n");
+                ctx.channel().attr(MANAGER).set(false);
+            }
+            else {
+                // No manager is present
+                sendMessage(ctx.channel(), "NormalError\n");
+            }
         }
 
-        else if (msg.startsWith("normal")) {
-            sendMessage(ctx.channel(), "Normal\n");
-            ctx.channel().attr(MANAGER).set(false);
-        }
         else if (msg.startsWith("wb")) {
             for (Channel channel : allChannels) {
                 if (channel != ctx.channel()) {
@@ -89,14 +104,18 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 }
             }
 
-        } else if (msg.startsWith("UserName")) {
+        }
+        else if (msg.startsWith("UserName")) {
             String[] parts = msg.split(":", 2);
             if (parts.length > 1) {
                 String username = parts[1].trim();
                 ctx.channel().attr(USER_NAME).set(username);
-                sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
+                if (Boolean.FALSE.equals(ctx.channel().attr(MANAGER).get())) {
+                    sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
+                }
             }
-        } else if (msg.startsWith("Delete")) {
+        }
+        else if (msg.startsWith("Delete")) {
             String[] parts = msg.split(":", 2);
             if (parts.length > 1) {
                 String usernameToDelete = parts[1].trim();
@@ -106,6 +125,27 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             for (Channel channel : allChannels) {
                 if (Boolean.FALSE.equals(channel.attr(MANAGER).get())) {
                     sendMessage(channel, "clear\n");
+                }
+            }
+        }
+        else if (msg.startsWith("reject")){
+            System.out.println("Rejecting user: " + ctx.channel().attr(USER_NAME).get());
+            String[] parts = msg.split(":", 2);
+            if (parts.length > 1) {
+                String usernameToDelete = parts[1].trim();
+                deleteChannel(usernameToDelete);
+            }
+        }
+
+        else if (msg.startsWith("approve")) {
+            String[] parts = msg.split(":", 2);
+            if (parts.length > 1) {
+                String username = parts[1].trim();
+                System.out.println("Approving user: " + username);
+                for (Channel channel : allChannels) {
+                    if (channel.attr(USER_NAME).get().equals(username)) {
+                        sendMessage(channel, "Approved\n");
+                    }
                 }
             }
         }
@@ -150,10 +190,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         if (newUser == null) return; //
         for (Channel channel : allChannels) {
             if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {
-                newUser = "TXT:NewUser: " + newUser + "\n";
-                ByteBuf msgBuf = channel.alloc().buffer();
-                msgBuf.writeBytes(newUser.getBytes(CharsetUtil.UTF_8));
-                channel.writeAndFlush(msgBuf);
+                sendMessage(channel, "NewUser: " + newUser);
                 System.out.println("Sent new user to manager: " + newUser);
             }
         }

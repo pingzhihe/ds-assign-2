@@ -62,17 +62,39 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         }
         else if (message.equals("Normal")){
             clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
-            whiteboard.start();
+            Dialogs.showWaitingMessage();
         }
-        
+        else if (message.equals("ManagerError")) {
+            Dialogs.showErrorDialog("Only one manager is allowed in the session.");
+            System.exit(1);
+        }
+
+        else if (message.equals("NormalError")) {
+            Dialogs.showErrorDialog("No manager is present in the session.");
+            System.exit(1);
+        }
         else if (message.startsWith("wb")){
             whiteboard.parseMessage(message);
         }
         else if (message.startsWith("NewUser")){
+
             String newUser = message.split(":")[1].trim();
-            whiteboard.addUser(newUser);
-            System.out.println("Received new user: " + newUser);
+            String command = Dialogs.showJoinMessage(newUser);
+
+            if (command.equals("approve")){
+                clientHandler.sendMessage("TXT:approve:" + newUser + "\n");
+                whiteboard.addUser(newUser);
+                System.out.println("Received new user: " + newUser);
+            }
+            else{
+                clientHandler.sendMessage("TXT:reject:" + newUser + "\n");
+            }
         }
+
+        else if (message.equals("Approved")){
+            whiteboard.start();
+        }
+
         else if (message.equals("KickedOut")){
             Dialogs.showKickOutMessage();
             whiteboard.shunDown();
@@ -84,6 +106,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         } else if (message.startsWith("clear")){
             whiteboard.clear();
         }
+
         else if (message.startsWith("You have been connected!")){
             if (isManager){
                 System.out.println("Client received: " + message);
