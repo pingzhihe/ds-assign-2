@@ -25,7 +25,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
     }
 
     @Override
-    public void onDraw(String message) {
+    public void onWhiteBoardMsg(String message) {
         clientHandler.sendMessage("TXT:" + message);
     }
 
@@ -46,9 +46,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         }
 
     }
-    public void shutdown() {
-        client.shutdown();
-    }
+
 
 
     @Override

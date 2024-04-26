@@ -6,14 +6,14 @@ public class Dialogs {
     public static String showLoginDialog() {
         while (true) {
             String userName = JOptionPane.showInputDialog(null, "Enter your name:", "Login", JOptionPane.PLAIN_MESSAGE);
-            // 检查是否返回null（表示用户点击取消或关闭对话框）
+            // check if null is returned (indicating user clicked cancel or closed the dialog)
             if (userName == null) {
                 JOptionPane.showMessageDialog(null, "No input received, application will exit.", "Exiting", JOptionPane.WARNING_MESSAGE);
-                System.exit(0);  // 用户取消输入或关闭窗口时退出程序
+                System.exit(0);  // Close the application if user cancels login
             } else if (!userName.trim().isEmpty()) {
-                return userName.trim();  // 返回有效的非空用户名
+                return userName.trim();  // Return the trimmed username
             } else {
-                // 如果用户没有输入任何内容但点击了OK，显示错误消息并重新显示输入框
+                // If user did not enter any content but clicked OK, show an error message and re-show the input box
                 JOptionPane.showMessageDialog(null, "You must enter a name to continue.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             }
         }

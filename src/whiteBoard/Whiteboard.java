@@ -74,7 +74,7 @@ public class Whiteboard extends JFrame {
                 drawArea.handleMouseReleased(e.getX(), e.getY());
                 if (!drawArea.getState().equals("free_draw") && !drawArea.getState().equals("text") &&
                         !drawArea.getState().equals("eraser")) {
-                    listener.onDraw(generateMessage(drawArea) + " " + e.getX() + " " + e.getY() + "\n");
+                    listener.onWhiteBoardMsg(generateMessage(drawArea) + " " + e.getX() + " " + e.getY() + "\n");
                     drawArea.handleMouseReleased(e.getX(), e.getY());
                 }
             }
@@ -84,7 +84,7 @@ public class Whiteboard extends JFrame {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (drawArea.getState().equals("free_draw") || drawArea.getState().equals("eraser")) {
-                    listener.onDraw(generateMessage(drawArea) + " " + e.getX() + " " + e.getY()+ "\n");
+                    listener.onWhiteBoardMsg(generateMessage(drawArea) + " " + e.getX() + " " + e.getY()+ "\n");
                     drawArea.handleMouseDragged(e.getX(), e.getY());
                 }
             }
@@ -93,13 +93,13 @@ public class Whiteboard extends JFrame {
         chatArea.getSendButton().addActionListener(e -> {
             String message = chatArea.getChatInput().getText();
             chatArea.getChatInput().setText("");
-            listener.onDraw("chat: " + message + "\n");
+            listener.onWhiteBoardMsg("chat: " + message + "\n");
         });
 
         managerPanel.getKickOutButton().addActionListener(e -> {
             String userName = managerPanel.kickOutSelectedUsers();
             if (!userName.equals(" ")) {
-                listener.onDraw("Delete: " + userName + "\n");
+                listener.onWhiteBoardMsg("Delete: " + userName + "\n");
             }
         });
 
@@ -136,7 +136,7 @@ public class Whiteboard extends JFrame {
                 toolsPanel.quickSave(filePath);
             }
             drawArea.clear();
-            listener.onDraw("clear\n");
+            listener.onWhiteBoardMsg("clear\n");
             filePath = "";
         });
     }
@@ -157,6 +157,13 @@ public class Whiteboard extends JFrame {
         baos.close();
         return imageInByte;
     }
+
+    //**
+    // * Converts a byte array to a BufferedImage.
+    // * @param imageInByte The byte array to convert.
+    // * @return A BufferedImage representing the image.
+    // * @throws IOException If an error occurs during reading.
+    // */
 
     public void receiveImg(byte[] img){
         try {

@@ -15,7 +15,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     private ServerMessageReceiver listener;
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
-        this.ctx = ctx;  // 保存上下文以便后续使用
+        this.ctx = ctx;  // Save the context for future use
 
         // 构建要发送的消息内容
         String message = "TXT: Hello from Client!\n";
@@ -31,12 +31,12 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
 
     public void sendMessage(String msg) {
         if (ctx != null) {
-            // 创建一个新的ByteBuf实例来存储要发送的数据
+            // Create a new ByteBuf instance to store the data to be sent
             ByteBuf msgBuf = ctx.alloc().buffer();
-            // 将String转换为字节数组，并写入ByteBuf
+            // Convert the string to a byte array and write it to the ByteBuf
             msgBuf.writeBytes(msg.getBytes(CharsetUtil.UTF_8));
-            // 通过Netty的管道发送数据
-            ctx.writeAndFlush(msgBuf);
+
+            ctx.writeAndFlush(msgBuf); //The ByteBuf will be released automatically by the Netty framework
         }
     }
     @Override
@@ -46,6 +46,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
         if (buf.readableBytes() < 4) {
             return; // Not enough bytes to read the length field
         }
+
         buf.markReaderIndex(); // Mark the current reader index
         byte[] typeIndicator = new byte[4];
         buf.readBytes(typeIndicator);
@@ -55,7 +56,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
             buf.skipBytes(4);
             String msgString= buf.toString(CharsetUtil.UTF_8);
             listener.messageReceived(msgString);
-            buf.release();
+            buf.release();  // Release the buffer
         }
         else if ("IMG:".equals(type)) {
             buf.skipBytes(4);
