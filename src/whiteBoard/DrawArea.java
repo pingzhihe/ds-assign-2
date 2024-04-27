@@ -21,7 +21,7 @@ public class DrawArea extends JComponent {
         setDoubleBuffered(false);
     }
 
-    public void handleMousePressed(int x, int y){
+    public String handleMousePressed(int x, int y){
         oldX = x;
         oldY = y;
         if (state.equals("text")) {
@@ -29,8 +29,10 @@ public class DrawArea extends JComponent {
             if (text != null) {
                 g2.drawString(text, oldX, oldY);
                 repaint();
+                return text;
             }
         }
+        return "";
     }
 
     public void handleMouseReleased(int x, int y){
@@ -147,15 +149,27 @@ public class DrawArea extends JComponent {
         } else if (state.equals("eraser")) {
             g2.setPaint(Color.white);
             g2.drawLine(x1, y1, x2, y2);
-        } else {
+        }
+        else {
             drawShape(x1, y1, x2, y2, state);
         }
+        repaint();
+    }
+    public void textWithMsg(String text, int x, int y){
+        g2.drawString(text, x, y);
         repaint();
     }
 
     public void parseMessage(String message){
         String[] msg = message.split(" ");
         String state = msg[0];
+        if (state.equals("text")){
+            int x = Integer.parseInt(msg[1]);
+            int y = Integer.parseInt(msg[2]);
+            textWithMsg(msg[3], x, y);
+            return;
+        }
+
         int rgb = Integer.parseInt(msg[1]);
         int thickness = Integer.parseInt(msg[2]);
         int x1 = Integer.parseInt(msg[3]);
@@ -167,15 +181,16 @@ public class DrawArea extends JComponent {
 
     public void loadImage(File file) {
         try {
-            BufferedImage loadedImage = ImageIO.read(file); // 读取图像
+            BufferedImage loadedImage = ImageIO.read(file); // Read the image
             if (loadedImage != null) {
                 image = loadedImage;
-                g2 = (Graphics2D) image.getGraphics(); // 更新 Graphics2D 对象
+                g2 = (Graphics2D) image.getGraphics(); // Update the Graphics2D object
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setPaint(currentColor);
                 g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-                setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this))); // 可选，根据图像大小调整组件大小
-                revalidate(); // 通知布局管理器组件大小可能改变
+                // Adjust the size of the component according to the size of the image
+                setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
+                revalidate(); // Notify the layout system that the size of the component may change
                 repaint();
             }
         } catch (IOException e) {
@@ -185,14 +200,15 @@ public class DrawArea extends JComponent {
     }
     public void loadBufferImage(BufferedImage img){
         image = img;
-        g2 = (Graphics2D) image.getGraphics(); // 更新 Graphics2D 对象
+        g2 = (Graphics2D) image.getGraphics(); // Update the Graphics2D object
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(currentColor);
         g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this))); // 可选，根据图像大小调整组件大小
-        revalidate(); // 通知布局管理器组件大小可能改变
+        // Adjust the size of the component according to the size of the image
+        setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
         repaint();
     }
+
     public BufferedImage getImageData(){
         return (BufferedImage) image;
     }

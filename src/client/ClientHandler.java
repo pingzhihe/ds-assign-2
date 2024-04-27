@@ -17,14 +17,14 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         this.ctx = ctx;  // Save the context for future use
 
-        // 构建要发送的消息内容
+        // Construct the message to be sent
         String message = "TXT: Hello from Client!\n";
 
-        // 使用ByteBuf来封装字符串数据
+        // Using the context's ByteBuf allocator, create a new ByteBuf instance to store the message
         ByteBuf msgBuf = ctx.alloc().buffer();
         msgBuf.writeBytes(message.getBytes(CharsetUtil.UTF_8));
 
-        // 发送消息
+        // Send the message to the server
         ctx.writeAndFlush(msgBuf);
 
     }

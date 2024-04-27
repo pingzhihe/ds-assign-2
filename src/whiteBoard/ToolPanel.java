@@ -140,6 +140,7 @@ public class ToolPanel extends JPanel {
             drawArea.loadImage(file);
             return loadedImage;
         }
+
         return null;
     }
 

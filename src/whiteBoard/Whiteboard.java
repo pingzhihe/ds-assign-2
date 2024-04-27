@@ -66,8 +66,9 @@ public class Whiteboard extends JFrame {
         drawArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                drawArea.handleMousePressed(e.getX(), e.getY());
-                if (drawArea.getState().equals("text")) {
+                String text = drawArea.handleMousePressed(e.getX(), e.getY());
+                if (drawArea.getState().equals("text")&& text != ""){
+                    listener.onWhiteBoardMsg("wb " + drawArea.getState()+" " + e.getX() + " " + e.getY() +" " + text + "\n");
                 }
             }
             public void mouseReleased(MouseEvent e) {

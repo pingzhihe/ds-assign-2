@@ -45,15 +45,15 @@ public class Client{
             ChannelFuture future = bootstrap.connect(host, port).sync();
             channel = future.channel();
             if (!future.isSuccess()) {
-                throw future.cause(); // 如果连接失败，抛出异常
+                throw future.cause(); // If the connection fails, throw an exception
             }
 
         } catch (Throwable e) {
             group.shutdownGracefully();
             if (e instanceof ConnectException) {
-                throw (ConnectException) e; // 抛出连接异常供调用者处理
+                throw (ConnectException) e; // Throw the ConnectException for the caller to handle
             } else if (e instanceof InterruptedException) {
-                throw (InterruptedException) e; // 抛出中断异常
+                throw (InterruptedException) e; // Throw the InterruptedException for the caller to handle
             } else {
                 throw new RuntimeException("Connection failed due to an unexpected error", e);
             }

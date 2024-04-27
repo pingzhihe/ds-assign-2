@@ -200,7 +200,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
 
     private void sendNewUserToManager(String newUser) {
-        if (newUser == null) return; //
+        if (newUser == null) return;
         for (Channel channel : allChannels) {
             if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {
                 sendMessage(channel, "NewUser: " + newUser);
@@ -210,7 +210,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     }
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) {
-        ctx.flush(); // 将之前接收到的信息冲刷到远程节点
+        ctx.flush(); // Flush the buffer
     }
 
 
