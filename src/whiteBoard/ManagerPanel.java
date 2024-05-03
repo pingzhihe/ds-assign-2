@@ -88,5 +88,14 @@ public class ManagerPanel extends JPanel {
         }
     }
 
+    public String getUserList(){
+        Vector<Vector> dataVector = tableModel.getDataVector();
+        StringBuilder userList = new StringBuilder();
+        for (int i = 0; i < dataVector.size(); i++) {
+            userList.append(dataVector.get(i).get(1)).append(",");
+    }
+        System.out.println(userList);
+        return userList.toString();
+    }
 
 }

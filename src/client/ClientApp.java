@@ -63,6 +63,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         }
         else if (message.equals("Normal")){
             clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
+            Dialogs.showWaitingMessage();
 
         }
         else if (message.equals("ManagerError")) {
@@ -87,6 +88,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
                 clientHandler.sendImg(whiteboard.getImg());
                 whiteboard.addUser(newUser);
                 System.out.println("Received new user: " + newUser);
+                clientHandler.sendMessage("TXT:Userlist-" + newUser + ":" + whiteboard.getUserList() + "\n");
             }
             else{
                 clientHandler.sendMessage("TXT:reject:" + newUser + "\n");
@@ -97,10 +99,17 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
             whiteboard.start();
         }
 
-        else if (message.startsWith("Userlist")){
-            String[] users = message.split(":");
-            for (int i = 1; i < users.length; i++){
-                whiteboard.addUser(users[i]);
+        else if (message.startsWith("Add")){
+            String newUser = message.split(":")[1].trim();
+            whiteboard.addUser(newUser);
+        }
+
+        else if (message.startsWith("Userlist")) {
+            String users = message.split(":")[1].trim();
+            System.out.println(users);
+            String[] userList = users.split(",");
+            for (String user : userList) {
+                whiteboard.addUser(user);
             }
         }
 
@@ -138,6 +147,14 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
             userName = Dialogs.showLoginDialog();
             clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
             Dialogs.showWaitingMessage();
+        }
+        else if (message.startsWith("UserList")) {
+            int index = message.indexOf(":");
+            String userList = message.substring(index + 1);
+            String[] users = userList.split(",");
+            for (String user : users) {
+                whiteboard.addUser(user);
+            }
         }
 
         else {

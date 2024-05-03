@@ -102,7 +102,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     }
                 }
             }
-
         }
         else if (msg.startsWith("UserName")) {
             String[] parts = msg.split(":", 2);
@@ -116,7 +115,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 }
                 ctx.channel().attr(USER_NAME).set(username);
                 if (Boolean.FALSE.equals(ctx.channel().attr(MANAGER).get())) {
-                    sendNewUserToAll(ctx.channel().attr(USER_NAME).get());
+                    sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
                 }
             }
         }
@@ -162,6 +161,19 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             }
         }
 
+        else if (msg.startsWith("Userlist")) {
+            String UserName = msg.split(":")[0].split("-")[1];
+            String users = msg.split(":")[1].trim();
+            msg = "Userlist: " + users;
+            System.out.println("HOLLY SHIT" + UserName);
+            for (Channel channel : allChannels) {
+                if (UserName.equals(channel.attr(USER_NAME).get())) {
+                    sendMessage(channel,  msg+ "\n");
+                    System.out.println(msg);
+                }
+            }
+        }
+
         else {
             System.out.println("Server received: " + msg);
         }
@@ -196,20 +208,21 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 break;  // Assuming only one channel per username, break after found
             }
         }
-
+        // Remove the user's name on the panel
         for (Channel channel : allChannels) {
-            if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {
                 sendMessage(channel, "Removed: " + usernameToDelete);
-            }
         }
     }
 
-    private void sendNewUserToAll(String newUser) {
+    private void sendNewUserToManager(String newUser) {
         if (newUser == null) return;
         for (Channel channel : allChannels) {
             if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {
                 sendMessage(channel, "NewUser: " + newUser);
                 System.out.println("Sent new user to manager: " + newUser);
+            }
+            else if (Boolean.FALSE.equals(channel.attr(MANAGER).get()) && !newUser.equals(channel.attr(USER_NAME).get())) {
+                sendMessage(channel, "Add:" +  newUser);
             }
         }
     }

@@ -191,6 +191,7 @@ public class Whiteboard extends JFrame {
             drawArea.parseMessage(trimmedMsg);
         }
     }
+
     public void managerMode(){
         setSize(1200, 600);
         toolsPanel.setManager();
@@ -201,6 +202,11 @@ public class Whiteboard extends JFrame {
     public void addUser(String newUser){
         managerPanel.addUser(newUser);
     }
+
+    public String getUserList(){
+        return managerPanel.getUserList();
+    }
+
     public void shunDown(){
         System.exit(0);
     }

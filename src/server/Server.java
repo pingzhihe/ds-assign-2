@@ -50,15 +50,15 @@ public class Server {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        String host = "localhost";  // 默认主机地址
-        int port = 8070;            // 默认端口
+        String host = "localhost";  // Default host address
+        int port = 8070;            // Default port number
 
         if (args.length > 0) {
-            host = args[0];  // 如果存在参数，则第一个参数为主机地址
+            host = args[0];   // If there are arguments, the first argument is the host address
         }
         if (args.length > 1) {
             try {
-                port = Integer.parseInt(args[1]);  // 第二个参数为端口，需要转换为整数
+                port = Integer.parseInt(args[1]); // The second argument is the port number, which needs to be converted to an integer
             } catch (NumberFormatException e) {
                 System.out.println("Invalid port number provided. Using default port 8070.");
             }
