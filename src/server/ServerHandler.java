@@ -117,13 +117,26 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 if (Boolean.FALSE.equals(ctx.channel().attr(MANAGER).get())) {
                     sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
                 }
+                else{
+                    sendMessage(ctx.channel(), "Add:" + username + "\n");
+                }
             }
         }
+
         else if (msg.startsWith("Delete")) {
             String[] parts = msg.split(":", 2);
             if (parts.length > 1) {
                 String usernameToDelete = parts[1].trim();
-                deleteChannel(usernameToDelete);
+                if (Boolean.TRUE.equals(ctx.channel().attr(MANAGER).get())) {
+                    deleteChannel(usernameToDelete);
+                    for (Channel channel : allChannels) {
+                        sendMessage(channel, "shutdown\n");
+                    }
+                }
+                else {
+                    deleteChannel(usernameToDelete);
+                }
+
             }
         }else if (msg.startsWith("clear")){
             for (Channel channel : allChannels) {
