@@ -8,9 +8,11 @@ import java.net.ConnectException;
 public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver {
     private Client client;
     private ClientHandler clientHandler;
+
     private Whiteboard whiteboard;
 
     private String userName;
+
 
     boolean isManager = false;
 
@@ -61,13 +63,13 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         }
         else if (message.equals("Normal")){
             clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
-            Dialogs.showWaitingMessage();
+
         }
         else if (message.equals("ManagerError")) {
             Dialogs.showErrorDialog("Only one manager is allowed in the session.");
             System.exit(1);
         }
-
+    
         else if (message.equals("NormalError")) {
             Dialogs.showErrorDialog("No manager is present in the session.");
             System.exit(1);
@@ -93,6 +95,13 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
 
         else if (message.equals("Approved")){
             whiteboard.start();
+        }
+
+        else if (message.startsWith("Userlist")){
+            String[] users = message.split(":");
+            for (int i = 1; i < users.length; i++){
+                whiteboard.addUser(users[i]);
+            }
         }
 
         else if (message.equals("KickedOut")){
@@ -123,6 +132,12 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
         else if (message.startsWith("Removed")){
             String removedUser = message.split(":")[1].trim();
             whiteboard.removeUser(removedUser);
+        }
+        else if (message.startsWith("DuplicateName")){
+            Dialogs.showDuplicateName();
+            userName = Dialogs.showLoginDialog();
+            clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
+            Dialogs.showWaitingMessage();
         }
 
         else {

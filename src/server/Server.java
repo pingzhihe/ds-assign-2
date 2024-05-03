@@ -63,8 +63,6 @@ public class Server {
                 System.out.println("Invalid port number provided. Using default port 8070.");
             }
         }
-
         new Server(host, port).start();
-
     }
 }

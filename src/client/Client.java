@@ -31,7 +31,7 @@ public class Client{
             Bootstrap bootstrap = new Bootstrap()
                     .group(group)
                     .channel(NioSocketChannel.class)
-                    .handler(           new ChannelInitializer<SocketChannel>() {
+                    .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {
                             ch.config().setOption(ChannelOption.TCP_NODELAY, true);

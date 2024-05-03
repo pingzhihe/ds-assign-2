@@ -18,7 +18,7 @@ public class ManagerPanel extends JPanel {
     }
 
     private void initializeComponents() {
-        // 设置表格模型，包括用户名和复选框
+        // Set up the table model, including username and checkbox
         tableModel = new DefaultTableModel();
         tableModel.addColumn("Select");
         tableModel.addColumn("Username");
@@ -27,7 +27,7 @@ public class ManagerPanel extends JPanel {
             public Class<?> getColumnClass(int column) {
                 switch (column) {
                     case 0:
-                        return Boolean.class; // 第一列为复选框
+                        return Boolean.class; // The first column is a checkbox
                     case 1:
                         return String.class; // Second row is username
                     default:
@@ -42,6 +42,7 @@ public class ManagerPanel extends JPanel {
     private void setupLayout() {
         add(new JScrollPane(userTable), BorderLayout.CENTER);
         add(kickOutButton, BorderLayout.SOUTH);
+        kickOutButton.setVisible(false);
     }
 
 
@@ -54,12 +55,11 @@ public class ManagerPanel extends JPanel {
 
         boolean atLeastOneSelected = false;
         for (int i = dataVector.size() - 1; i >= 0; i--) {
-            if ((Boolean) dataVector.get(i).get(0)) { // 检查复选框是否被选中
+            if ((Boolean) dataVector.get(i).get(0)) { // Check if the checkbox is selected
                 atLeastOneSelected = true;
                 String username = (String) dataVector.get(i).get(1);
-                System.out.println("User kicked out: " + username); // 打印信息要在移除前进行
-                tableModel.removeRow(i); // 移除选中的行
-                // 这里可以添加更多逻辑，比如通知服务器踢出用户
+                System.out.println("User kicked out: " + username);  // Print the information before removing
+                tableModel.removeRow(i); // Remove the selected row
                 return username;
 
             }
@@ -71,6 +71,7 @@ public class ManagerPanel extends JPanel {
         return " ";
     }
     public void addUser(String username) {
+
         tableModel.addRow(new Object[]{false, username});
     }
 

@@ -27,7 +27,6 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
 
         allChannels.add(ctx.channel());
         String message = "TXT:You have been connected!" + "\n";
-
         ByteBuf msgBuf = ctx.alloc().buffer();
         msgBuf.writeBytes(message.getBytes(CharsetUtil.UTF_8));
         ctx.writeAndFlush(msgBuf);
@@ -109,9 +108,15 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
             String[] parts = msg.split(":", 2);
             if (parts.length > 1) {
                 String username = parts[1].trim();
+                for (Channel channel : allChannels) {
+                    if (username.equals(channel.attr(USER_NAME).get())) {
+                        sendMessage(ctx.channel(), "DuplicateName\n");
+                        return;
+                    }
+                }
                 ctx.channel().attr(USER_NAME).set(username);
                 if (Boolean.FALSE.equals(ctx.channel().attr(MANAGER).get())) {
-                    sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
+                    sendNewUserToAll(ctx.channel().attr(USER_NAME).get());
                 }
             }
         }
@@ -199,7 +204,7 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
         }
     }
 
-    private void sendNewUserToManager(String newUser) {
+    private void sendNewUserToAll(String newUser) {
         if (newUser == null) return;
         for (Channel channel : allChannels) {
             if (Boolean.TRUE.equals(channel.attr(MANAGER).get())) {

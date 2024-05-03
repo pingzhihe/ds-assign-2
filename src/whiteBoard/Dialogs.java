@@ -45,11 +45,15 @@ public class Dialogs {
         }
     }
     public static void showWaitingMessage(){
-        JOptionPane.showMessageDialog(null, "Waiting for approval from the manager.");
+        JOptionPane.showMessageDialog(null, "Waiting for server's response and approval from the manager.");
     }
 
     public static void showManagerShutDown(){
         JOptionPane.showMessageDialog(null, "Manager has shut down the session. Exiting application.");
+    }
+
+    public static void showDuplicateName(){
+        JOptionPane.showMessageDialog(null, "Name already exists. Please enter a different name.");
     }
 
 

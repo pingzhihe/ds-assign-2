@@ -39,5 +39,4 @@ public class ChatArea extends JPanel {
         return chatArea;
     }
 
-
 }

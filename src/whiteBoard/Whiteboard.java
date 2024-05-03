@@ -59,6 +59,7 @@ public class Whiteboard extends JFrame {
     private void setupLayout() {
         getContentPane().add(chatArea, BorderLayout.EAST);
         getContentPane().add(toolsPanel, BorderLayout.NORTH);
+        getContentPane().add(managerPanel, BorderLayout.WEST);
     }
 
     private void setupActions() {
@@ -193,7 +194,8 @@ public class Whiteboard extends JFrame {
     public void managerMode(){
         setSize(1200, 600);
         toolsPanel.setManager();
-        getContentPane().add(managerPanel, BorderLayout.WEST);
+        managerPanel.getKickOutButton().setVisible(true);
+
     }
 
     public void addUser(String newUser){
