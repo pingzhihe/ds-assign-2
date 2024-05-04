@@ -40,7 +40,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
             client.connect(clientHandler);
         } catch (ConnectException | InterruptedException e) {
 
-            // 捕获特定的 ConnectException
+            //  Catch the specific ConnectException
             Dialogs.showErrorDialog("Cannot connect to server at " +
                     client.getHost() + ":" + client.getPort() + ". Please ensure the server is running.");
 
@@ -55,7 +55,7 @@ public class ClientApp implements WhiteBoardEventListener, ServerMessageReceiver
     public void messageReceived(String message) {
         message = message.trim();
         if (message.equals("Manager")){
-            System.out.println(userName);
+                System.out.println(userName);
             clientHandler.sendMessage("TXT:UserName: "+ userName + "\n");
             whiteboard.managerMode();
             Dialogs.showAdminWelcomeMessage();

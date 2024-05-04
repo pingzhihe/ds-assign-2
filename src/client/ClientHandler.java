@@ -42,7 +42,7 @@ public class ClientHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf buf = (ByteBuf) msg;
-//        System.out.println("Client received: " + buf.toString(CharsetUtil.UTF_8));
+
         if (buf.readableBytes() < 4) {
             return; // Not enough bytes to read the length field
         }

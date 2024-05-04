@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class DrawArea extends JComponent {
     private Image image;
@@ -32,7 +33,7 @@ public class DrawArea extends JComponent {
                 return text;
             }
         }
-        return "";
+        return " ";
     }
 
     public void handleMouseReleased(int x, int y){
@@ -53,6 +54,7 @@ public class DrawArea extends JComponent {
             oldY = y;
             repaint();
         }
+
         else if (state.equals("eraser")) {
             g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
             g2.setPaint(Color.white);
@@ -166,10 +168,15 @@ public class DrawArea extends JComponent {
         if (state.equals("text")){
             int x = Integer.parseInt(msg[1]);
             int y = Integer.parseInt(msg[2]);
-            textWithMsg(msg[3], x, y);
+            if (msg.length == 3){
+                textWithMsg("", x, y);
+                return;
+            }
+            String[] subMsg = Arrays.copyOfRange(msg, 3, msg.length);
+            String text = String.join(" ", subMsg);
+            textWithMsg(text, x, y);
             return;
         }
-
         int rgb = Integer.parseInt(msg[1]);
         int thickness = Integer.parseInt(msg[2]);
         int x1 = Integer.parseInt(msg[3]);
@@ -200,11 +207,10 @@ public class DrawArea extends JComponent {
     }
     public void loadBufferImage(BufferedImage img){
         image = img;
-        g2 = (Graphics2D) image.getGraphics(); // Update the Graphics2D object
+        g2 = (Graphics2D) image.getGraphics();
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setPaint(currentColor);
         g2.setStroke(new BasicStroke(thickness, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
-        // Adjust the size of the component according to the size of the image
         setPreferredSize(new Dimension(image.getWidth(this), image.getHeight(this)));
         repaint();
     }
