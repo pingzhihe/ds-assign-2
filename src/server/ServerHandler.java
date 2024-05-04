@@ -20,6 +20,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
     private static final AttributeKey<String> USER_NAME = AttributeKey.valueOf("USER_NAME");
     private static final AttributeKey<Boolean> MANAGER = AttributeKey.valueOf("MANAGER");
 
+    private static String managerName = "";
+
     private static boolean isManager = false;
 
     private HashMap<String, String> chatHistory = new HashMap<>();
@@ -118,6 +120,8 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                     sendNewUserToManager(ctx.channel().attr(USER_NAME).get());
                 }
                 else{
+                    managerName = ctx.channel().attr(USER_NAME).get();
+                    System.out.println("Manager name: " + managerName);
                     sendMessage(ctx.channel(), "Add:" + username + "\n");
                 }
             }
@@ -129,15 +133,17 @@ public class ServerHandler extends ChannelInboundHandlerAdapter {
                 String usernameToDelete = parts[1].trim();
                 if (Boolean.TRUE.equals(ctx.channel().attr(MANAGER).get())) {
                     deleteChannel(usernameToDelete);
-                    for (Channel channel : allChannels) {
-                        sendMessage(channel, "shutdown\n");
+                    if (usernameToDelete.equals(managerName)) {
+                        for (Channel channel : allChannels) {
+                            sendMessage(channel, "shutdown\n");
+                        }
                     }
                 }
                 else {
                     deleteChannel(usernameToDelete);
                 }
-
             }
+
         }else if (msg.startsWith("clear")){
             for (Channel channel : allChannels) {
                 if (Boolean.FALSE.equals(channel.attr(MANAGER).get())) {
